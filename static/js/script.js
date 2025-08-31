@@ -154,12 +154,31 @@ function displayResult(result) {
     
     // Update notes
     if (result.notes) {
-        const notesHtml = `
-            <div><strong>Pace:</strong> ${result.notes.pace_wpm || 150} WPM</div>
-            <div><strong>TTS Tags:</strong> ${result.notes.tts_tags_used ? 'Used' : 'Not used'}</div>
-            <div><strong>Legal Framing:</strong> ${result.notes.legal_framing || 'Neutral'}</div>
-        `;
-        document.getElementById('resultNotes').innerHTML = notesHtml;
+        const notesContainer = document.getElementById('resultNotes');
+        notesContainer.innerHTML = ''; // Clear existing content
+        
+        // Create safe DOM elements
+        const paceDiv = document.createElement('div');
+        const paceStrong = document.createElement('strong');
+        paceStrong.textContent = 'Pace:';
+        paceDiv.appendChild(paceStrong);
+        paceDiv.appendChild(document.createTextNode(' ' + (result.notes.pace_wpm || 150) + ' WPM'));
+        
+        const ttsDiv = document.createElement('div');
+        const ttsStrong = document.createElement('strong');
+        ttsStrong.textContent = 'TTS Tags:';
+        ttsDiv.appendChild(ttsStrong);
+        ttsDiv.appendChild(document.createTextNode(' ' + (result.notes.tts_tags_used ? 'Used' : 'Not used')));
+        
+        const legalDiv = document.createElement('div');
+        const legalStrong = document.createElement('strong');
+        legalStrong.textContent = 'Legal Framing:';
+        legalDiv.appendChild(legalStrong);
+        legalDiv.appendChild(document.createTextNode(' ' + (result.notes.legal_framing || 'Neutral')));
+        
+        notesContainer.appendChild(paceDiv);
+        notesContainer.appendChild(ttsDiv);
+        notesContainer.appendChild(legalDiv);
     }
     
     // Display YouTube tags if available
