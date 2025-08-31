@@ -8,8 +8,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeForm() {
-    // Set default values
-    document.getElementById('duration_seconds').value = '45';
+    // Set default values for both duration selectors
+    const humanizeDuration = document.getElementById('humanize_duration');
+    const generateDuration = document.getElementById('generate_duration');
+    
+    if (humanizeDuration) humanizeDuration.value = '45';
+    if (generateDuration) generateDuration.value = '45';
     
     // Initialize mode
     handleModeChange();
@@ -259,6 +263,9 @@ function showCopyToast() {
 function handleModeChange() {
     const mode1 = document.getElementById('mode1');
     const mode2 = document.getElementById('mode2');
+    
+    if (!mode1 || !mode2) return; // Safety check
+    
     const isHumanizeMode = mode1.checked;
     
     const buttonText = document.getElementById('buttonText');
@@ -267,31 +274,33 @@ function handleModeChange() {
     const rawScriptInput = document.getElementById('raw_script');
     const topicInput = document.getElementById('topic');
     const genreInput = document.getElementById('genre');
+    const mode1Card = document.getElementById('mode1Card');
+    const mode2Card = document.getElementById('mode2Card');
     
     // Update card styling
-    document.getElementById('mode1Card').classList.toggle('active', isHumanizeMode);
-    document.getElementById('mode2Card').classList.toggle('active', !isHumanizeMode);
+    if (mode1Card) mode1Card.classList.toggle('active', isHumanizeMode);
+    if (mode2Card) mode2Card.classList.toggle('active', !isHumanizeMode);
     
     if (isHumanizeMode) {
         // Mode 1: Humanize
-        buttonText.textContent = 'Humanize Script';
-        humanizeSection.style.display = 'block';
-        generateSection.style.display = 'none';
-        rawScriptInput.required = true;
+        if (buttonText) buttonText.textContent = 'Humanize Script';
+        if (humanizeSection) humanizeSection.style.display = 'block';
+        if (generateSection) generateSection.style.display = 'none';
+        if (rawScriptInput) rawScriptInput.required = true;
         
         // Remove required from generate mode fields
-        topicInput.required = false;
-        genreInput.required = false;
+        if (topicInput) topicInput.required = false;
+        if (genreInput) genreInput.required = false;
     } else {
         // Mode 2: Generate
-        buttonText.textContent = 'Generate Script';
-        humanizeSection.style.display = 'none';
-        generateSection.style.display = 'block';
-        rawScriptInput.required = false;
+        if (buttonText) buttonText.textContent = 'Generate Script';
+        if (humanizeSection) humanizeSection.style.display = 'none';
+        if (generateSection) generateSection.style.display = 'block';
+        if (rawScriptInput) rawScriptInput.required = false;
         
         // Add required to generate mode fields
-        topicInput.required = true;
-        genreInput.required = true;
+        if (topicInput) topicInput.required = true;
+        if (genreInput) genreInput.required = true;
         
         // Trigger genre change to show/hide options
         handleGenreChange();
