@@ -10,10 +10,9 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeForm() {
     // Set default values
     document.getElementById('duration_seconds').value = '45';
-    document.getElementById('cta').value = 'सत्य सामने आए';
     
-    // Initialize mode toggle
-    handleModeToggle();
+    // Initialize mode
+    handleModeChange();
 }
 
 function initializeEventListeners() {
@@ -26,8 +25,22 @@ function initializeEventListeners() {
     // Real-time character count for title
     document.getElementById('resultTitle').addEventListener('input', updateTitleLength);
     
-    // Mode toggle
-    document.getElementById('modeToggle').addEventListener('change', handleModeToggle);
+    // Mode selection
+    document.getElementById('mode1').addEventListener('change', handleModeChange);
+    document.getElementById('mode2').addEventListener('change', handleModeChange);
+    
+    // Genre selection
+    document.getElementById('genre').addEventListener('change', handleGenreChange);
+    
+    // Mode card clicks
+    document.getElementById('mode1Card').addEventListener('click', () => {
+        document.getElementById('mode1').checked = true;
+        handleModeChange();
+    });
+    document.getElementById('mode2Card').addEventListener('click', () => {
+        document.getElementById('mode2').checked = true;
+        handleModeChange();
+    });
 }
 
 async function handleFormSubmit(event) {
@@ -47,29 +60,25 @@ async function handleFormSubmit(event) {
     
     try {
         // Check mode
-        const isHumanizeMode = document.getElementById('modeToggle').checked;
+        const isHumanizeMode = document.getElementById('mode1').checked;
         
         // Prepare data based on mode
         const data = {
-            mode: isHumanizeMode ? 'humanize' : 'generate'
+            mode: isHumanizeMode ? 'humanize' : 'generate',
+            duration_seconds: parseInt(formData.get('duration_seconds')) || 45
         };
         
         if (isHumanizeMode) {
-            // Humanize mode - only send raw script
+            // Mode 1: Humanize - send raw script and duration
             data.raw_script = formData.get('raw_script');
         } else {
-            // Generate mode - send all form fields
+            // Mode 2: Generate - send topic, genre, description, and optional fields
             data.topic = formData.get('topic');
-            data.location = formData.get('location');
-            data.victim_role = formData.get('victim_role');
-            data.aspiration = formData.get('aspiration') || 'civil services';
-            data.duration_seconds = parseInt(formData.get('duration_seconds')) || 45;
-            data.timeline = formData.get('timeline') ? formData.get('timeline').split('\n').filter(line => line.trim()) : [];
-            data.official_version = formData.get('official_version');
-            data.family_version = formData.get('family_version');
-            data.must_include = formData.get('must_include') ? formData.get('must_include').split('\n').filter(line => line.trim()) : [];
+            data.genre = formData.get('genre');
+            data.description = formData.get('description') || '';
+            data.location = formData.get('location') || '';
+            data.victim_role = formData.get('victim_role') || '';
             data.keywords = formData.get('keywords') ? formData.get('keywords').split(',').map(k => k.trim()).filter(k => k) : [];
-            data.cta = formData.get('cta') || 'सत्य सामने आए';
         }
         
         // Make API call
@@ -249,45 +258,57 @@ function showCopyToast() {
     toast.show();
 }
 
-function handleModeToggle() {
-    const modeToggle = document.getElementById('modeToggle');
-    const isHumanizeMode = modeToggle.checked;
+function handleModeChange() {
+    const mode1 = document.getElementById('mode1');
+    const mode2 = document.getElementById('mode2');
+    const isHumanizeMode = mode1.checked;
     
-    const modeLabel = document.getElementById('modeLabel');
-    const modeDescription = document.getElementById('modeDescription');
     const buttonText = document.getElementById('buttonText');
-    const rawScriptSection = document.getElementById('rawScriptSection');
-    const generateModeFields = document.getElementById('generateModeFields');
+    const humanizeSection = document.getElementById('humanizeSection');
+    const generateSection = document.getElementById('generateSection');
     const rawScriptInput = document.getElementById('raw_script');
+    const topicInput = document.getElementById('topic');
+    const genreInput = document.getElementById('genre');
+    
+    // Update card styling
+    document.getElementById('mode1Card').classList.toggle('active', isHumanizeMode);
+    document.getElementById('mode2Card').classList.toggle('active', !isHumanizeMode);
     
     if (isHumanizeMode) {
-        // Switch to humanize mode
-        modeLabel.textContent = 'Humanize Existing Script';
-        modeDescription.textContent = 'Make an existing script sound more natural and human-like';
+        // Mode 1: Humanize
         buttonText.textContent = 'Humanize Script';
-        rawScriptSection.style.display = 'block';
-        generateModeFields.style.display = 'none';
+        humanizeSection.style.display = 'block';
+        generateSection.style.display = 'none';
         rawScriptInput.required = true;
         
         // Remove required from generate mode fields
-        document.getElementById('topic').required = false;
-        document.getElementById('location').required = false;
-        document.getElementById('victim_role').required = false;
-        document.getElementById('duration_seconds').required = false;
+        topicInput.required = false;
+        genreInput.required = false;
     } else {
-        // Switch to generate mode
-        modeLabel.textContent = 'Generate New Script';
-        modeDescription.textContent = 'Create a new Hindi script from case details and timeline';
+        // Mode 2: Generate
         buttonText.textContent = 'Generate Script';
-        rawScriptSection.style.display = 'none';
-        generateModeFields.style.display = 'block';
+        humanizeSection.style.display = 'none';
+        generateSection.style.display = 'block';
         rawScriptInput.required = false;
         
         // Add required to generate mode fields
-        document.getElementById('topic').required = true;
-        document.getElementById('location').required = true;
-        document.getElementById('victim_role').required = true;
-        document.getElementById('duration_seconds').required = true;
+        topicInput.required = true;
+        genreInput.required = true;
+        
+        // Trigger genre change to show/hide options
+        handleGenreChange();
+    }
+}
+
+function handleGenreChange() {
+    const genre = document.getElementById('genre').value;
+    const investigativeOptions = document.getElementById('investigativeOptions');
+    
+    // Show additional options for investigative/news genres
+    if (genre === 'investigative' || genre === 'mysterious' || genre === 'thriller') {
+        investigativeOptions.style.display = 'block';
+    } else {
+        investigativeOptions.style.display = 'none';
     }
 }
 
@@ -295,7 +316,7 @@ function resetButtonState() {
     const generateBtn = document.getElementById('generateBtn');
     const buttonSpinner = document.getElementById('buttonSpinner');
     const buttonText = document.getElementById('buttonText');
-    const isHumanizeMode = document.getElementById('modeToggle').checked;
+    const isHumanizeMode = document.getElementById('mode1').checked;
     
     generateBtn.disabled = false;
     buttonSpinner.style.display = 'none';

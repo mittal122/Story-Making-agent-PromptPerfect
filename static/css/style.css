@@ -250,6 +250,48 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 3px 10px rgba(0, 0, 0, 0.1) !important;
 }
 
+/* Mode selection cards */
+.cursor-pointer {
+    cursor: pointer;
+}
+
+#mode1Card, #mode2Card {
+    transition: all 0.3s ease;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+#mode1Card:hover, #mode2Card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.15);
+}
+
+#mode1Card.active {
+    border-color: var(--bs-warning) !important;
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 193, 7, 0.05));
+}
+
+#mode2Card.active {
+    border-color: var(--bs-success) !important;
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(40, 167, 69, 0.05));
+}
+
+.mode-icon {
+    transition: transform 0.3s ease;
+}
+
+.card.active .mode-icon {
+    transform: scale(1.1);
+}
+
+/* Genre-based styling */
+#investigativeOptions {
+    border-left: 3px solid var(--bs-info);
+    padding-left: 1rem;
+    margin-left: 0.5rem;
+    background: rgba(23, 162, 184, 0.05);
+    border-radius: 0 8px 8px 0;
+}
+
 /* Smooth transitions */
 * {
     transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;

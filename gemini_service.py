@@ -34,12 +34,25 @@ SAFETY AND STYLE GUARDRAILS (always enforce):
 - Descriptions formatted for YouTube algorithm
 - Hashtags researched for trending topics"""
 
+# Genre-specific storytelling guidelines
+GENRE_GUIDELINES = {
+    "mysterious": "Create suspense and intrigue with unanswered questions, dramatic pauses, and revelation techniques. Use phrases like 'क्या होगा अगर...', 'रहस्य ये है', 'सच क्या है?'",
+    "motivational": "Use inspiring language, success stories, and emotional appeals. Include phrases like 'आप भी कर सकते हैं', 'सफलता की कहानी', 'सपने पूरे होते हैं'",
+    "thriller": "Build tension with quick pacing, shocking reveals, and cliffhangers. Use dramatic phrases like 'अचानक', 'शॉकिंग सच', 'ये तो सिर्फ शुरुआत थी'",
+    "educational": "Clear explanations, step-by-step breakdowns, and learning points. Use phrases like 'आइए जानते हैं', 'समझिए', 'इससे क्या सीख?'",
+    "investigative": "Fact-based narrative with evidence and analysis. Use neutral framing like 'आरोप है', 'दावा किया गया', 'जांच जारी'",
+    "inspirational": "Uplifting stories with emotional connection and hope. Use phrases like 'प्रेरणादायक', 'उम्मीद की किरण', 'जीवन बदल गया'",
+    "dramatic": "High emotion, conflict, and resolution. Use expressive language with dramatic emphasis and emotional peaks",
+    "informative": "Clear, factual presentation with organized information and practical insights"
+}
+
 CORE_PROMPT = """Follow the SYSTEM INSTRUCTIONS and SAFETY GUARDRAILS. Use the INPUT SCHEMA values to generate output strictly in the OUTPUT SCHEMA JSON. Do not add commentary.
 
 PRECISE TIMING CALCULATIONS:
 - Hindi TTS: 150 words per minute average
 - Short (30s): ~75 words | (45s): ~112 words | (60s): ~150 words
-- Long (3min): ~450 words | (4min): ~600 words | (5min): ~750 words
+- Medium (2min): ~300 words | (3min): ~450 words
+- Long (5min): ~750 words | (10min): ~1500 words
 - Include pauses and emphasis in word count
 
 YOUTUBE ALGORITHM OPTIMIZATION STEPS:
@@ -87,11 +100,49 @@ OUTPUT SCHEMA (optimized for YouTube algorithm):
 
 def generate_hindi_script(input_payload):
     """
-    Generate Hindi YouTube script using Gemini API
+    Generate Hindi YouTube script using Gemini API with genre-based storytelling
     """
     try:
-        # Construct the complete prompt
-        prompt = f"{SYSTEM_INSTRUCTIONS}\n\n{CORE_PROMPT}\n\nINPUT_JSON:\n{json.dumps(input_payload, ensure_ascii=False)}"
+        # Extract content details
+        content = input_payload.get('content', {})
+        generation = input_payload.get('generation', {})
+        
+        topic = content.get('topic', '')
+        genre = content.get('genre', 'informative')
+        description = content.get('description', '')
+        duration_seconds = generation.get('duration_seconds', 45)
+        
+        # Get genre-specific guidelines
+        genre_guidance = GENRE_GUIDELINES.get(genre, GENRE_GUIDELINES['informative'])
+        
+        # Calculate target word count
+        target_words = int((duration_seconds / 60) * 150)
+        
+        # Construct genre-specific prompt
+        prompt = f"""{SYSTEM_INSTRUCTIONS}
+
+{CORE_PROMPT}
+
+GENRE-SPECIFIC GUIDELINES:
+{genre_guidance}
+
+SCRIPT REQUIREMENTS:
+- Topic: {topic}
+- Genre: {genre.title()}
+- Duration: {duration_seconds} seconds (approximately {target_words} words)
+- Description: {description if description else 'Generate creatively based on topic and genre'}
+- Language: Hindi (conversational and engaging)
+- Format: YouTube-optimized for maximum reach
+
+CREATE A COMPELLING {genre.upper()} SCRIPT:
+1. Hook viewers in first 3 seconds with genre-appropriate opening
+2. Develop story using {genre} storytelling techniques
+3. Maintain engagement with genre-specific language and pacing
+4. Include natural transitions and emotional connection
+5. End with strong call-to-action
+6. Ensure exact timing: {duration_seconds} seconds = ~{target_words} words
+
+Generate a complete script following the OUTPUT SCHEMA."""
         
         # Generate content using Gemini
         response = client.models.generate_content(
@@ -135,7 +186,7 @@ def generate_hindi_script(input_payload):
         return {"error": f"API call failed: {str(e)}"}
 
 
-def humanize_hindi_script(raw_script):
+def humanize_hindi_script(raw_script, duration_seconds=45):
     """
     Humanize an existing Hindi script to make it sound more natural and conversational
     """
@@ -157,15 +208,25 @@ Key principles:
 
 Output the same JSON format with humanized content:"""
         
-        # Construct the humanization prompt
+        # Calculate target word count based on duration
+        target_words = int((duration_seconds / 60) * 150)  # 150 WPM for Hindi TTS
+        
+        # Construct the humanization prompt with timing
         prompt = f"""{humanization_instructions}
 
 {CORE_PROMPT}
 
+Target Duration: {duration_seconds} seconds (approximately {target_words} words)
+
 Original Raw Script to Humanize:
 {raw_script}
 
-Please rewrite this script to sound completely natural and human-like while maintaining the same structure and key information. Focus on making it conversational and authentic."""
+Please rewrite this script to:
+1. Sound completely natural and human-like
+2. Fit exactly {duration_seconds} seconds when spoken (around {target_words} words)
+3. Maintain the core message while making it conversational
+4. Add proper pacing with natural pauses and emphasis
+5. Use engaging storytelling techniques appropriate for the content"""
         
         # Generate humanized content using Gemini
         response = client.models.generate_content(
@@ -197,12 +258,17 @@ Please rewrite this script to sound completely natural and human-like while main
             if len(result.get("title", "")) > 65:
                 result["title"] = result["title"][:62] + "..."
             
-            # Add humanization note
+            # Add processing notes
             if "notes" not in result:
                 result["notes"] = {}
-            result["notes"]["humanized"] = True
-            result["notes"]["original_length"] = len(raw_script)
-            result["notes"]["processing"] = "Script humanized for natural speech"
+            if "humanized" not in result["notes"]:
+                result["notes"]["genre"] = input_payload.get('content', {}).get('genre', 'general')
+                result["notes"]["target_duration"] = f"{duration_seconds} seconds"
+                result["notes"]["processing"] = "Genre-based script generation"
+            else:
+                result["notes"]["humanized"] = True
+                result["notes"]["original_length"] = len(raw_script)
+                result["notes"]["processing"] = "Script humanized for natural speech"
             
             return result
             

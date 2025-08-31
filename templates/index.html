@@ -13,36 +13,98 @@
             </div>
             <div class="card-body">
                 <form id="scriptForm">
-                    <!-- Mode Toggle -->
+                    <!-- Mode Selection -->
                     <div class="mb-4">
-                        <label class="form-label fw-bold">Mode</label>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="modeToggle" name="mode">
-                            <label class="form-check-label" for="modeToggle" id="modeLabel">
-                                Generate New Script
-                            </label>
-                        </div>
-                        <div class="form-text" id="modeDescription">
-                            Create a new Hindi script from case details and timeline
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-cog me-2 text-primary"></i>
+                            Script Mode
+                        </label>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="card border-2" id="mode1Card">
+                                    <div class="card-body text-center p-3">
+                                        <input class="form-check-input d-none" type="radio" name="script_mode" id="mode1" value="humanize" checked>
+                                        <label for="mode1" class="w-100 cursor-pointer">
+                                            <i class="fas fa-magic fa-2x text-warning mb-2"></i>
+                                            <h6 class="fw-bold">Mode 1: Humanize</h6>
+                                            <small class="text-muted">Transform existing script into engaging, human-like narration</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card border-2" id="mode2Card">
+                                    <div class="card-body text-center p-3">
+                                        <input class="form-check-input d-none" type="radio" name="script_mode" id="mode2" value="generate">
+                                        <label for="mode2" class="w-100 cursor-pointer">
+                                            <i class="fas fa-pen-nib fa-2x text-success mb-2"></i>
+                                            <h6 class="fw-bold">Mode 2: Generate</h6>
+                                            <small class="text-muted">Create new script from topic and genre with storytelling</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Raw Script Input (for humanization mode) -->
-                    <div class="mb-3" id="rawScriptSection" style="display: none;">
-                        <label for="raw_script" class="form-label">Raw Script to Humanize *</label>
+                    <!-- Mode 1: Humanize Script Input -->
+                    <div class="mb-3" id="humanizeSection">
+                        <label for="raw_script" class="form-label">
+                            <i class="fas fa-file-text me-1 text-warning"></i>
+                            Existing Script to Humanize *
+                        </label>
                         <textarea class="form-control" id="raw_script" name="raw_script" rows="8" 
-                                  placeholder="Paste your raw script here...&#10;&#10;The AI will rewrite it to sound more natural and human-like, as if a person is actually speaking it."></textarea>
-                        <div class="form-text">Paste the script you want to make sound more natural and conversational</div>
+                                  placeholder="Paste your existing script here...&#10;&#10;• The AI will rewrite it in a human, engaging, storytelling style&#10;• Maintains original meaning while making it natural for narration&#10;• Adjusts pacing and structure to fit your selected time duration"></textarea>
+                        <div class="form-text">
+                            <i class="fas fa-lightbulb me-1"></i>
+                            Input any script and we'll transform it into engaging, human-like narration
+                        </div>
                     </div>
 
-                    <!-- Generation Details (shown only in generate mode) -->
-                    <div id="generateModeFields">
-                    <!-- Basic Information -->
-                    <div class="mb-3">
-                        <label for="topic" class="form-label">Topic *</label>
-                        <input type="text" class="form-control" id="topic" name="topic" 
-                               placeholder="e.g., UPSC aspirant death case" required>
-                    </div>
+                    <!-- Mode 2: Generate New Script -->
+                    <div id="generateSection" style="display: none;">
+                        <!-- Topic and Genre -->
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label for="topic" class="form-label">
+                                    <i class="fas fa-lightbulb me-1 text-success"></i>
+                                    Topic *
+                                </label>
+                                <input type="text" class="form-control" id="topic" name="topic" 
+                                       placeholder="e.g., UPSC aspirant death case, mysterious disappearance, success story">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="genre" class="form-label">
+                                    <i class="fas fa-theater-masks me-1 text-info"></i>
+                                    Genre *
+                                </label>
+                                <select class="form-select" id="genre" name="genre">
+                                    <option value="">Select Genre</option>
+                                    <option value="mysterious">Mysterious</option>
+                                    <option value="motivational">Motivational</option>
+                                    <option value="thriller">Thriller</option>
+                                    <option value="educational">Educational</option>
+                                    <option value="investigative">Investigative</option>
+                                    <option value="inspirational">Inspirational</option>
+                                    <option value="dramatic">Dramatic</option>
+                                    <option value="informative">Informative</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Description (Optional) -->
+                        <div class="mb-3">
+                            <label for="description" class="form-label">
+                                <i class="fas fa-align-left me-1 text-secondary"></i>
+                                Description <span class="text-muted">(Optional)</span>
+                            </label>
+                            <textarea class="form-control" id="description" name="description" rows="3" 
+                                      placeholder="Provide additional context or specific details you want included in the script...&#10;&#10;Leave blank for creative AI generation based on topic and genre."></textarea>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Optional: Add specific details to enrich the script, or leave blank for creative generation
+                            </div>
+                        </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -77,67 +139,67 @@
                             <input type="text" class="form-control" id="victim_role" name="victim_role" 
                                    placeholder="e.g., UPSC student" required>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="aspiration" class="form-label">Aspiration</label>
-                            <input type="text" class="form-control" id="aspiration" name="aspiration" 
-                                   placeholder="e.g., civil services">
+
+                        <!-- Additional Options for Investigative/News Content -->
+                        <div class="row" id="investigativeOptions" style="display: none;">
+                            <div class="col-md-6 mb-3">
+                                <label for="location" class="form-label">Location</label>
+                                <input type="text" class="form-control" id="location" name="location" 
+                                       placeholder="e.g., Gondal, Gujarat">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="victim_role" class="form-label">Subject Role</label>
+                                <input type="text" class="form-control" id="victim_role" name="victim_role" 
+                                       placeholder="e.g., UPSC student">
+                            </div>
                         </div>
+
+                        <!-- SEO Keywords -->
+                        <div class="mb-3">
+                            <label for="keywords" class="form-label">
+                                <i class="fas fa-search me-1"></i>
+                                SEO Keywords <span class="text-muted">(Optional)</span>
+                            </label>
+                            <input type="text" class="form-control" id="keywords" name="keywords" 
+                                   placeholder="e.g., motivational, success story, trending topic">
+                            <div class="form-text">
+                                <i class="fas fa-lightbulb me-1"></i>
+                                Add relevant keywords for better YouTube reach (separate with commas)
+                            </div>
+                        </div>
+
                     </div>
 
-                    <!-- Timeline -->
-                    <div class="mb-3">
-                        <label for="timeline" class="form-label">Timeline Events</label>
-                        <textarea class="form-control" id="timeline" name="timeline" rows="3" 
-                                  placeholder="Enter timeline events (one per line)&#10;e.g., घर के बाहर कहासुनी&#10;सुबह से लापता&#10;बॉडी की सूचना"></textarea>
-                        <div class="form-text">Enter each event on a new line</div>
-                    </div>
-
-                    <!-- Versions -->
-                    <div class="mb-3">
-                        <label for="official_version" class="form-label">Official Version</label>
-                        <textarea class="form-control" id="official_version" name="official_version" rows="2" 
-                                  placeholder="e.g., पुलिस का दावा: रोड एक्सीडेंट; CCTV/ड्राइवर स्टेटमेंट"></textarea>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="family_version" class="form-label">Family/Alternative Version</label>
-                        <textarea class="form-control" id="family_version" name="family_version" rows="2" 
-                                  placeholder="e.g., परिवार का आरोप: मारपीट/हत्या; पोस्टमार्टम पर सवाल"></textarea>
-                    </div>
-
-                    <!-- Must Include -->
-                    <div class="mb-3">
-                        <label for="must_include" class="form-label">Must Include Points</label>
-                        <textarea class="form-control" id="must_include" name="must_include" rows="3" 
-                                  placeholder="Enter key points to include (one per line)&#10;e.g., FIR में देरी/सुनवाई आरोप&#10;CCTV/चेन‑ऑफ‑कस्टडी&#10;पोस्टमार्टम/इंजरी काउंट"></textarea>
-                        <div class="form-text">Enter each point on a new line</div>
-                    </div>
-
-                    <!-- SEO -->
-                    <div class="mb-3">
-                        <label for="keywords" class="form-label">
-                            <i class="fas fa-search me-1"></i>
-                            SEO Keywords
+                    <!-- Common Duration Selection -->
+                    <div class="mb-4">
+                        <label for="duration_seconds" class="form-label">
+                            <i class="fas fa-clock me-1 text-warning"></i>
+                            Target Duration *
                         </label>
-                        <input type="text" class="form-control" id="keywords" name="keywords" 
-                               placeholder="e.g., UPSC student, investigation, Gujarat, viral news">
+                        <select class="form-select" id="duration_seconds" name="duration_seconds" required>
+                            <optgroup label="Short Format">
+                                <option value="30">30 seconds (Quick Hook)</option>
+                                <option value="45" selected>45 seconds (Standard Short)</option>
+                                <option value="60">60 seconds (Detailed Short)</option>
+                            </optgroup>
+                            <optgroup label="Medium Format">
+                                <option value="120">2 minutes (Brief Story)</option>
+                                <option value="180">3 minutes (Standard Story)</option>
+                            </optgroup>
+                            <optgroup label="Long Format">
+                                <option value="300">5 minutes (Full Story)</option>
+                                <option value="600">10 minutes (Detailed Analysis)</option>
+                            </optgroup>
+                        </select>
                         <div class="form-text">
-                            <i class="fas fa-lightbulb me-1"></i>
-                            Use trending keywords for better YouTube reach (separate with commas)
+                            <i class="fas fa-info-circle me-1"></i>
+                            Script will be precisely timed to fit this duration with proper pacing
                         </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="cta" class="form-label">Call to Action</label>
-                        <input type="text" class="form-control" id="cta" name="cta" 
-                               placeholder="e.g., सत्य सामने आए" value="सत्य सामने आए">
-                    </div>
-
                     </div>
 
                     <button type="submit" class="btn btn-lg btn-primary w-100 shadow-lg" id="generateBtn">
                         <i class="fas fa-magic me-2"></i>
-                        <span id="buttonText">Generate Script</span>
+                        <span id="buttonText">Humanize Script</span>
                         <div class="spinner-border spinner-border-sm ms-2" id="buttonSpinner" style="display: none;"></div>
                     </button>
                 </form>

@@ -20,14 +20,14 @@ def generate_script():
         mode = form_data.get('mode', 'generate')
         
         if mode == 'humanize':
-            # Validate required fields for humanize mode
+            # Mode 1: Humanize - Validate required fields
             if not form_data.get('raw_script'):
                 return jsonify({
                     'error': 'Raw script is required for humanization mode'
                 }), 400
         else:
-            # Validate required fields for generate mode
-            required_fields = ['topic', 'location', 'victim_role', 'duration']
+            # Mode 2: Generate - Validate required fields
+            required_fields = ['topic', 'genre']
             missing_fields = [field for field in required_fields if not form_data.get(field)]
             
             if missing_fields:
@@ -36,35 +36,18 @@ def generate_script():
                 }), 400
         
         if mode == 'humanize':
-            # Handle humanization mode
-            result = humanize_hindi_script(form_data.get('raw_script'))
+            # Mode 1: Handle humanization mode
+            duration_seconds = int(form_data.get('duration_seconds', 45))
+            result = humanize_hindi_script(form_data.get('raw_script'), duration_seconds)
         else:
-            # Handle generation mode
-            # Parse timeline if provided as JSON string
-            timeline = form_data.get('timeline', '[]')
-            if isinstance(timeline, str):
-                try:
-                    timeline = json.loads(timeline)
-                except json.JSONDecodeError:
-                    timeline = timeline.split('\n') if timeline else []
-            
-            # Parse must_include items
-            must_include = form_data.get('must_include', '[]')
-            if isinstance(must_include, str):
-                try:
-                    must_include = json.loads(must_include)
-                except json.JSONDecodeError:
-                    must_include = must_include.split('\n') if must_include else []
-            
+            # Mode 2: Handle generation mode
             # Parse keywords
-            keywords = form_data.get('keywords', '[]')
+            keywords = form_data.get('keywords', '')
             if isinstance(keywords, str):
-                try:
-                    keywords = json.loads(keywords)
-                except json.JSONDecodeError:
-                    keywords = keywords.split(',') if keywords else []
+                keywords = keywords.split(',') if keywords else []
+            keywords = [k.strip() for k in keywords if k.strip()]
             
-            # Build input payload for Gemini API with YouTube optimization
+            # Build input payload for genre-based generation
             duration_seconds = int(form_data.get('duration_seconds', 45))
             input_payload = {
                 "api_key_mode": "env",
@@ -76,21 +59,18 @@ def generate_script():
                     "youtube_optimized": True,
                     "algorithm_focus": "maximum_reach"
                 },
-                "case": {
+                "content": {
                     "topic": form_data.get('topic'),
-                    "location": form_data.get('location'),
-                    "victim_role": form_data.get('victim_role'),
-                    "aspiration": form_data.get('aspiration', 'civil services'),
-                    "timeline": timeline,
-                    "official_version": form_data.get('official_version', ''),
-                    "family_version": form_data.get('family_version', ''),
-                    "must_include": must_include,
-                    "cta": form_data.get('cta', 'सत्य सामने आए')
+                    "genre": form_data.get('genre'),
+                    "description": form_data.get('description', ''),
+                    "location": form_data.get('location', ''),
+                    "subject_role": form_data.get('victim_role', ''),
+                    "keywords": keywords
                 },
                 "seo": {
                     "primary_keywords": keywords,
                     "hashtag_style": "youtube_optimized",
-                    "audience": "16-35, Hindi, news/moral storytelling",
+                    "audience": "16-35, Hindi, storytelling",
                     "platform": "youtube",
                     "optimization_goal": "viral_reach"
                 }
