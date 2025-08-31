@@ -35,10 +35,18 @@ def generate_script():
                     'error': f'Missing required fields: {", ".join(missing_fields)}'
                 }), 400
         
+        logging.info(f"Processing {mode} request")
+        
         if mode == 'humanize':
             # Mode 1: Handle humanization mode
             duration_seconds = int(form_data.get('duration_seconds', 45))
-            result = humanize_hindi_script(form_data.get('raw_script'), duration_seconds)
+            try:
+                result = humanize_hindi_script(form_data.get('raw_script'), duration_seconds)
+            except Exception as api_error:
+                logging.error(f"Gemini API error in humanize mode: {str(api_error)}")
+                return jsonify({
+                    'error': 'Script humanization service is temporarily unavailable. Please try again in a few moments.'
+                }), 503
         else:
             # Mode 2: Handle generation mode
             # No additional parsing needed
@@ -69,7 +77,13 @@ def generate_script():
             }
             
             # Generate script using Gemini API
-            result = generate_hindi_script(input_payload)
+            try:
+                result = generate_hindi_script(input_payload)
+            except Exception as api_error:
+                logging.error(f"Gemini API error in generate mode: {str(api_error)}")
+                return jsonify({
+                    'error': 'Script generation service is temporarily unavailable. Please try again in a few moments.'
+                }), 503
         
         if result.get('error'):
             return jsonify({'error': result['error']}), 500

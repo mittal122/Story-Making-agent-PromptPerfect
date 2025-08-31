@@ -261,14 +261,12 @@ Please rewrite this script to:
             # Add processing notes
             if "notes" not in result:
                 result["notes"] = {}
-            if "humanized" not in result["notes"]:
-                result["notes"]["genre"] = input_payload.get('content', {}).get('genre', 'general')
-                result["notes"]["target_duration"] = f"{duration_seconds} seconds"
-                result["notes"]["processing"] = "Genre-based script generation"
-            else:
-                result["notes"]["humanized"] = True
-                result["notes"]["original_length"] = len(raw_script)
-                result["notes"]["processing"] = "Script humanized for natural speech"
+            
+            # Add humanization-specific notes
+            result["notes"]["humanized"] = True
+            result["notes"]["original_length"] = len(raw_script)
+            result["notes"]["target_duration"] = f"{duration_seconds} seconds"
+            result["notes"]["processing"] = "Script humanized for natural speech"
             
             return result
             
