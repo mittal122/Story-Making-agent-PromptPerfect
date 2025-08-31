@@ -77,7 +77,6 @@ async function handleFormSubmit(event) {
             data.genre = formData.get('genre');
             data.description = formData.get('description') || '';
             data.duration_seconds = parseInt(formData.get('generate_duration')) || 45;
-            data.keywords = formData.get('keywords') ? formData.get('keywords').split(',').map(k => k.trim()).filter(k => k) : [];
         }
         
         // Make API call

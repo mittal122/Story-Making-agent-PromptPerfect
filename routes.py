@@ -41,11 +41,7 @@ def generate_script():
             result = humanize_hindi_script(form_data.get('raw_script'), duration_seconds)
         else:
             # Mode 2: Handle generation mode
-            # Parse keywords
-            keywords = form_data.get('keywords', '')
-            if isinstance(keywords, str):
-                keywords = keywords.split(',') if keywords else []
-            keywords = [k.strip() for k in keywords if k.strip()]
+            # No additional parsing needed
             
             # Build input payload for genre-based generation
             duration_seconds = int(form_data.get('duration_seconds', 45))
@@ -62,11 +58,9 @@ def generate_script():
                 "content": {
                     "topic": form_data.get('topic'),
                     "genre": form_data.get('genre'),
-                    "description": form_data.get('description', ''),
-                    "keywords": keywords
+                    "description": form_data.get('description', '')
                 },
                 "seo": {
-                    "primary_keywords": keywords,
                     "hashtag_style": "youtube_optimized",
                     "audience": "16-35, Hindi, storytelling",
                     "platform": "youtube",
