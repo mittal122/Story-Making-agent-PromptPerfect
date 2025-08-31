@@ -98,7 +98,7 @@ OUTPUT SCHEMA (optimized for YouTube algorithm):
   }
 }"""
 
-def generate_hindi_script(input_payload):
+def generate_hindi_script(input_payload, custom_api_key=None):
     """
     Generate Hindi YouTube script using Gemini API with genre-based storytelling
     """
@@ -144,8 +144,13 @@ CREATE A COMPELLING {genre.upper()} SCRIPT:
 
 Generate a complete script following the OUTPUT SCHEMA."""
         
+        # Use custom API key if provided
+        api_client = client
+        if custom_api_key:
+            api_client = genai.Client(api_key=custom_api_key)
+        
         # Generate content using Gemini
-        response = client.models.generate_content(
+        response = api_client.models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt,
             config=types.GenerateContentConfig(
@@ -186,7 +191,7 @@ Generate a complete script following the OUTPUT SCHEMA."""
         return {"error": f"API call failed: {str(e)}"}
 
 
-def humanize_hindi_script(raw_script, duration_seconds=45):
+def humanize_hindi_script(raw_script, duration_seconds=45, custom_api_key=None):
     """
     Humanize an existing Hindi script to make it sound more natural and conversational
     """
@@ -228,8 +233,13 @@ Please rewrite this script to:
 4. Add proper pacing with natural pauses and emphasis
 5. Use engaging storytelling techniques appropriate for the content"""
         
+        # Use custom API key if provided
+        api_client = client
+        if custom_api_key:
+            api_client = genai.Client(api_key=custom_api_key)
+            
         # Generate humanized content using Gemini
-        response = client.models.generate_content(
+        response = api_client.models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt,
             config=types.GenerateContentConfig(

@@ -45,6 +45,9 @@ function initializeEventListeners() {
         document.getElementById('mode2').checked = true;
         handleModeChange();
     });
+    
+    // API key management
+    initializeApiKeyManagement();
 }
 
 async function handleFormSubmit(event) {
@@ -70,6 +73,12 @@ async function handleFormSubmit(event) {
         const data = {
             mode: isHumanizeMode ? 'humanize' : 'generate'
         };
+        
+        // Include API key if available
+        const apiKey = getStoredApiKey();
+        if (apiKey) {
+            data.api_key = apiKey;
+        }
         
         if (isHumanizeMode) {
             // Mode 1: Humanize - send raw script and duration
@@ -102,7 +111,20 @@ async function handleFormSubmit(event) {
         
     } catch (error) {
         console.error('Error:', error);
-        showError('Network error. Please check your connection and try again.');
+        
+        // Provide specific solutions based on error type
+        let errorMessage = 'API connection failed. ';
+        if (!getStoredApiKey()) {
+            errorMessage += 'Please set your Gemini API key in the API Settings menu (top right). Get your free key from Google AI Studio.';
+        } else if (error.message.includes('fetch')) {
+            errorMessage += 'Check your internet connection and try again. If the problem persists, verify your API key is valid.';
+        } else if (error.message.includes('json')) {
+            errorMessage += 'Server error occurred. The service may be temporarily unavailable. Try again in a few moments.';
+        } else {
+            errorMessage += 'Unexpected error. Please refresh the page and try again.';
+        }
+        
+        showError(errorMessage);
     }
 }
 
@@ -361,3 +383,117 @@ function resetButtonState() {
         }, false);
     });
 })();
+
+// API Key Management Functions
+function initializeApiKeyManagement() {
+    // Initialize API key status
+    updateApiKeyStatus();
+    
+    // API key input toggle
+    document.getElementById('toggleApiKey').addEventListener('click', function() {
+        const input = document.getElementById('apiKeyInput');
+        const icon = this.querySelector('i');
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'fas fa-eye-slash';
+        } else {
+            input.type = 'password';
+            icon.className = 'fas fa-eye';
+        }
+    });
+    
+    // Save API key
+    document.getElementById('saveApiKey').addEventListener('click', function() {
+        const apiKey = document.getElementById('apiKeyInput').value.trim();
+        
+        if (!apiKey) {
+            showToast('Please enter an API key', 'warning');
+            return;
+        }
+        
+        // Validate API key format (basic validation)
+        if (!apiKey.startsWith('AIza') || apiKey.length < 30) {
+            showToast('Invalid API key format. Please check your Gemini API key.', 'warning');
+            return;
+        }
+        
+        // Store API key in localStorage
+        localStorage.setItem('gemini_api_key', apiKey);
+        updateApiKeyStatus();
+        showToast('API key saved successfully!', 'success');
+        
+        // Clear the input
+        document.getElementById('apiKeyInput').value = '';
+    });
+    
+    // Clear API key
+    document.getElementById('clearApiKey').addEventListener('click', function() {
+        localStorage.removeItem('gemini_api_key');
+        updateApiKeyStatus();
+        document.getElementById('apiKeyInput').value = '';
+        showToast('API key cleared', 'info');
+    });
+    
+    // Load stored API key on page load
+    const storedKey = getStoredApiKey();
+    if (storedKey) {
+        // Show partial key for security
+        document.getElementById('apiKeyInput').placeholder = `Key saved: ${storedKey.substring(0, 8)}...`;
+    }
+}
+
+function getStoredApiKey() {
+    return localStorage.getItem('gemini_api_key');
+}
+
+function updateApiKeyStatus() {
+    const statusElement = document.getElementById('apiKeyStatus');
+    const apiKey = getStoredApiKey();
+    
+    if (apiKey) {
+        statusElement.textContent = 'Configured';
+        statusElement.className = 'text-success';
+    } else {
+        statusElement.textContent = 'Not configured';
+        statusElement.className = 'text-warning';
+    }
+}
+
+function showToast(message, type = 'info') {
+    // Create toast if it doesn't exist
+    let toastContainer = document.querySelector('.toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+        document.body.appendChild(toastContainer);
+    }
+    
+    const toastId = 'toast_' + Date.now();
+    const iconClass = type === 'success' ? 'fa-check' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+    const bgClass = type === 'success' ? 'bg-success' : type === 'warning' ? 'bg-warning' : 'bg-info';
+    
+    const toastHTML = `
+        <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-body ${bgClass} text-white">
+                <i class="fas ${iconClass} me-2"></i>
+                ${message}
+            </div>
+        </div>
+    `;
+    
+    toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+    
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement, {
+        autohide: true,
+        delay: 3000
+    });
+    
+    toast.show();
+    
+    // Remove toast element after it's hidden
+    toastElement.addEventListener('hidden.bs.toast', () => {
+        toastElement.remove();
+    });
+}
