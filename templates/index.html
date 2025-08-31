@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-pen-fancy me-2"></i>
+                    Script Details
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="scriptForm">
+                    <!-- Basic Information -->
+                    <div class="mb-3">
+                        <label for="topic" class="form-label">Topic *</label>
+                        <input type="text" class="form-control" id="topic" name="topic" 
+                               placeholder="e.g., UPSC aspirant death case" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="location" class="form-label">Location *</label>
+                            <input type="text" class="form-control" id="location" name="location" 
+                                   placeholder="e.g., Gondal, Gujarat" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="duration" class="form-label">Duration *</label>
+                            <select class="form-select" id="duration" name="duration" required>
+                                <option value="short">Short (45-60s)</option>
+                                <option value="long">Long (3-5 min)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="victim_role" class="form-label">Subject Role *</label>
+                            <input type="text" class="form-control" id="victim_role" name="victim_role" 
+                                   placeholder="e.g., UPSC student" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="aspiration" class="form-label">Aspiration</label>
+                            <input type="text" class="form-control" id="aspiration" name="aspiration" 
+                                   placeholder="e.g., civil services">
+                        </div>
+                    </div>
+
+                    <!-- Timeline -->
+                    <div class="mb-3">
+                        <label for="timeline" class="form-label">Timeline Events</label>
+                        <textarea class="form-control" id="timeline" name="timeline" rows="3" 
+                                  placeholder="Enter timeline events (one per line)&#10;e.g., घर के बाहर कहासुनी&#10;सुबह से लापता&#10;बॉडी की सूचना"></textarea>
+                        <div class="form-text">Enter each event on a new line</div>
+                    </div>
+
+                    <!-- Versions -->
+                    <div class="mb-3">
+                        <label for="official_version" class="form-label">Official Version</label>
+                        <textarea class="form-control" id="official_version" name="official_version" rows="2" 
+                                  placeholder="e.g., पुलिस का दावा: रोड एक्सीडेंट; CCTV/ड्राइवर स्टेटमेंट"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="family_version" class="form-label">Family/Alternative Version</label>
+                        <textarea class="form-control" id="family_version" name="family_version" rows="2" 
+                                  placeholder="e.g., परिवार का आरोप: मारपीट/हत्या; पोस्टमार्टम पर सवाल"></textarea>
+                    </div>
+
+                    <!-- Must Include -->
+                    <div class="mb-3">
+                        <label for="must_include" class="form-label">Must Include Points</label>
+                        <textarea class="form-control" id="must_include" name="must_include" rows="3" 
+                                  placeholder="Enter key points to include (one per line)&#10;e.g., FIR में देरी/सुनवाई आरोप&#10;CCTV/चेन‑ऑफ‑कस्टडी&#10;पोस्टमार्टम/इंजरी काउंट"></textarea>
+                        <div class="form-text">Enter each point on a new line</div>
+                    </div>
+
+                    <!-- SEO -->
+                    <div class="mb-3">
+                        <label for="keywords" class="form-label">Primary Keywords</label>
+                        <input type="text" class="form-control" id="keywords" name="keywords" 
+                               placeholder="e.g., UPSC student, investigation, Gujarat">
+                        <div class="form-text">Separate keywords with commas</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="cta" class="form-label">Call to Action</label>
+                        <input type="text" class="form-control" id="cta" name="cta" 
+                               placeholder="e.g., सत्य सामने आए" value="सत्य सामने आए">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100" id="generateBtn">
+                        <i class="fas fa-magic me-2"></i>
+                        Generate Script
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-file-alt me-2"></i>
+                    Generated Script
+                </h5>
+                <button class="btn btn-sm btn-outline-secondary" id="copyAllBtn" style="display: none;">
+                    <i class="fas fa-copy me-1"></i>
+                    Copy All
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="loadingSpinner" style="display: none;" class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Generating...</span>
+                    </div>
+                    <p class="mt-2">Generating your Hindi script...</p>
+                </div>
+
+                <div id="errorMessage" style="display: none;" class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <span id="errorText"></span>
+                </div>
+
+                <div id="resultContainer" style="display: none;">
+                    <!-- Title -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Title</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="resultTitle" readonly>
+                            <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('resultTitle')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="form-text">
+                            <span id="titleLength"></span> characters
+                        </div>
+                    </div>
+
+                    <!-- VO Script -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Voice Over Script</label>
+                        <div class="position-relative">
+                            <textarea class="form-control" id="resultScript" rows="8" readonly></textarea>
+                            <button class="btn btn-outline-secondary btn-sm position-absolute top-0 end-0 m-2" 
+                                    onclick="copyToClipboard('resultScript')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- On-screen Text -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">On-screen Text</label>
+                        <div class="input-group">
+                            <textarea class="form-control" id="resultOnScreen" rows="3" readonly></textarea>
+                            <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('resultOnScreen')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description</label>
+                        <div class="position-relative">
+                            <textarea class="form-control" id="resultDescription" rows="5" readonly></textarea>
+                            <button class="btn btn-outline-secondary btn-sm position-absolute top-0 end-0 m-2" 
+                                    onclick="copyToClipboard('resultDescription')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Hashtags -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Hashtags</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="resultHashtags" readonly>
+                            <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('resultHashtags')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Notes</label>
+                        <div class="small text-muted" id="resultNotes"></div>
+                    </div>
+                </div>
+
+                <div id="emptyState" class="text-center text-muted">
+                    <i class="fas fa-video fa-3x mb-3"></i>
+                    <p>Fill out the form and click "Generate Script" to create your Hindi YouTube script.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast for copy feedback -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="copyToast" class="toast" role="alert">
+        <div class="toast-body">
+            <i class="fas fa-check text-success me-2"></i>
+            Copied to clipboard!
+        </div>
+    </div>
+</div>
+{% endblock %}

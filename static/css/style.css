@@ -1,0 +1,71 @@
+/* Custom styles for Hindi text optimization */
+.form-control, .form-select {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Hindi text styling */
+#resultScript, #resultDescription, #resultTitle, #resultOnScreen {
+    font-family: 'Noto Sans Devanagari', 'Segoe UI', Arial, sans-serif;
+    line-height: 1.6;
+}
+
+/* Loading spinner container */
+#loadingSpinner {
+    padding: 3rem 0;
+}
+
+/* Result container styling */
+#resultContainer .position-relative {
+    position: relative;
+}
+
+#resultContainer .btn-sm {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Character count styling */
+.form-text {
+    font-size: 0.875rem;
+}
+
+/* Empty state styling */
+#emptyState {
+    padding: 3rem 0;
+}
+
+#emptyState .fa-video {
+    opacity: 0.3;
+}
+
+/* Toast styling */
+.toast {
+    border: none;
+    background-color: var(--bs-dark);
+    color: var(--bs-light);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .position-absolute.top-0.end-0 {
+        position: static !important;
+        margin: 0.5rem 0 0 0 !important;
+        width: 100%;
+    }
+}
+
+/* Form validation styles */
+.was-validated .form-control:invalid {
+    border-color: var(--bs-danger);
+}
+
+.was-validated .form-control:valid {
+    border-color: var(--bs-success);
+}
+
+/* Hindi font loading */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600&display=swap');

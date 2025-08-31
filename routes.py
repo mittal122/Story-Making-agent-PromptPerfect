@@ -1,0 +1,98 @@
+import json
+import logging
+from flask import render_template, request, jsonify, flash
+from app import app
+from gemini_service import generate_hindi_script
+
+@app.route('/')
+def index():
+    """Main page with the script generation form"""
+    return render_template('index.html')
+
+@app.route('/generate', methods=['POST'])
+def generate_script():
+    """Handle script generation requests"""
+    try:
+        # Get form data
+        form_data = request.get_json() if request.is_json else request.form.to_dict()
+        
+        # Validate required fields
+        required_fields = ['topic', 'location', 'victim_role', 'duration']
+        missing_fields = [field for field in required_fields if not form_data.get(field)]
+        
+        if missing_fields:
+            return jsonify({
+                'error': f'Missing required fields: {", ".join(missing_fields)}'
+            }), 400
+        
+        # Parse timeline if provided as JSON string
+        timeline = form_data.get('timeline', '[]')
+        if isinstance(timeline, str):
+            try:
+                timeline = json.loads(timeline)
+            except json.JSONDecodeError:
+                timeline = timeline.split('\n') if timeline else []
+        
+        # Parse must_include items
+        must_include = form_data.get('must_include', '[]')
+        if isinstance(must_include, str):
+            try:
+                must_include = json.loads(must_include)
+            except json.JSONDecodeError:
+                must_include = must_include.split('\n') if must_include else []
+        
+        # Parse keywords
+        keywords = form_data.get('keywords', '[]')
+        if isinstance(keywords, str):
+            try:
+                keywords = json.loads(keywords)
+            except json.JSONDecodeError:
+                keywords = keywords.split(',') if keywords else []
+        
+        # Build input payload for Gemini API
+        input_payload = {
+            "api_key_mode": "env",
+            "generation": {
+                "duration": form_data.get('duration', 'short'),
+                "language": "hi",
+                "voice_tags": True,
+                "include_titles": True,
+                "include_description": True
+            },
+            "case": {
+                "topic": form_data.get('topic'),
+                "location": form_data.get('location'),
+                "victim_role": form_data.get('victim_role'),
+                "aspiration": form_data.get('aspiration', 'civil services'),
+                "timeline": timeline,
+                "official_version": form_data.get('official_version', ''),
+                "family_version": form_data.get('family_version', ''),
+                "must_include": must_include,
+                "cta": form_data.get('cta', 'सत्य सामने आए')
+            },
+            "seo": {
+                "primary_keywords": keywords,
+                "hashtag_style": "shorts",
+                "audience": "16-35, Hindi, news/moral storytelling"
+            }
+        }
+        
+        # Generate script using Gemini API
+        result = generate_hindi_script(input_payload)
+        
+        if result.get('error'):
+            return jsonify({'error': result['error']}), 500
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error generating script: {str(e)}")
+        return jsonify({'error': f'Script generation failed: {str(e)}'}), 500
+
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('index.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return render_template('index.html'), 500
