@@ -64,20 +64,19 @@ async function handleFormSubmit(event) {
         
         // Prepare data based on mode
         const data = {
-            mode: isHumanizeMode ? 'humanize' : 'generate',
-            duration_seconds: parseInt(formData.get('duration_seconds')) || 45
+            mode: isHumanizeMode ? 'humanize' : 'generate'
         };
         
         if (isHumanizeMode) {
             // Mode 1: Humanize - send raw script and duration
             data.raw_script = formData.get('raw_script');
+            data.duration_seconds = parseInt(formData.get('humanize_duration')) || 45;
         } else {
-            // Mode 2: Generate - send topic, genre, description, and optional fields
+            // Mode 2: Generate - send topic, genre, description, and duration
             data.topic = formData.get('topic');
             data.genre = formData.get('genre');
             data.description = formData.get('description') || '';
-            data.location = formData.get('location') || '';
-            data.victim_role = formData.get('victim_role') || '';
+            data.duration_seconds = parseInt(formData.get('generate_duration')) || 45;
             data.keywords = formData.get('keywords') ? formData.get('keywords').split(',').map(k => k.trim()).filter(k => k) : [];
         }
         
@@ -301,15 +300,9 @@ function handleModeChange() {
 }
 
 function handleGenreChange() {
+    // Genre change handler - no additional options needed now
     const genre = document.getElementById('genre').value;
-    const investigativeOptions = document.getElementById('investigativeOptions');
-    
-    // Show additional options for investigative/news genres
-    if (genre === 'investigative' || genre === 'mysterious' || genre === 'thriller') {
-        investigativeOptions.style.display = 'block';
-    } else {
-        investigativeOptions.style.display = 'none';
-    }
+    // All genres use the same form fields now
 }
 
 function resetButtonState() {

@@ -59,6 +59,33 @@
                             <i class="fas fa-lightbulb me-1"></i>
                             Input any script and we'll transform it into engaging, human-like narration
                         </div>
+                        
+                        <!-- Duration for Humanize Mode -->
+                        <div class="mt-3">
+                            <label for="humanize_duration" class="form-label">
+                                <i class="fas fa-clock me-1 text-warning"></i>
+                                Target Duration for Humanized Script *
+                            </label>
+                            <select class="form-select" id="humanize_duration" name="humanize_duration">
+                                <optgroup label="Short Format">
+                                    <option value="30">30 seconds (Quick Hook)</option>
+                                    <option value="45" selected>45 seconds (Standard Short)</option>
+                                    <option value="60">60 seconds (Detailed Short)</option>
+                                </optgroup>
+                                <optgroup label="Medium Format">
+                                    <option value="120">2 minutes (Brief Story)</option>
+                                    <option value="180">3 minutes (Standard Story)</option>
+                                </optgroup>
+                                <optgroup label="Long Format">
+                                    <option value="300">5 minutes (Full Story)</option>
+                                    <option value="600">10 minutes (Detailed Analysis)</option>
+                                </optgroup>
+                            </select>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Choose how long you want the final humanized script to be
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Mode 2: Generate New Script -->
@@ -133,27 +160,6 @@
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="victim_role" class="form-label">Subject Role *</label>
-                            <input type="text" class="form-control" id="victim_role" name="victim_role" 
-                                   placeholder="e.g., UPSC student" required>
-                        </div>
-
-                        <!-- Additional Options for Investigative/News Content -->
-                        <div class="row" id="investigativeOptions" style="display: none;">
-                            <div class="col-md-6 mb-3">
-                                <label for="location" class="form-label">Location</label>
-                                <input type="text" class="form-control" id="location" name="location" 
-                                       placeholder="e.g., Gondal, Gujarat">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="victim_role" class="form-label">Subject Role</label>
-                                <input type="text" class="form-control" id="victim_role" name="victim_role" 
-                                       placeholder="e.g., UPSC student">
-                            </div>
-                        </div>
-
                         <!-- SEO Keywords -->
                         <div class="mb-3">
                             <label for="keywords" class="form-label">
@@ -168,34 +174,33 @@
                             </div>
                         </div>
 
-                    </div>
-
-                    <!-- Common Duration Selection -->
-                    <div class="mb-4">
-                        <label for="duration_seconds" class="form-label">
-                            <i class="fas fa-clock me-1 text-warning"></i>
-                            Target Duration *
-                        </label>
-                        <select class="form-select" id="duration_seconds" name="duration_seconds" required>
-                            <optgroup label="Short Format">
-                                <option value="30">30 seconds (Quick Hook)</option>
-                                <option value="45" selected>45 seconds (Standard Short)</option>
-                                <option value="60">60 seconds (Detailed Short)</option>
-                            </optgroup>
-                            <optgroup label="Medium Format">
-                                <option value="120">2 minutes (Brief Story)</option>
-                                <option value="180">3 minutes (Standard Story)</option>
-                            </optgroup>
-                            <optgroup label="Long Format">
-                                <option value="300">5 minutes (Full Story)</option>
-                                <option value="600">10 minutes (Detailed Analysis)</option>
-                            </optgroup>
-                        </select>
-                        <div class="form-text">
-                            <i class="fas fa-info-circle me-1"></i>
-                            Script will be precisely timed to fit this duration with proper pacing
+                        <!-- Duration for Generate Mode -->
+                        <div class="mb-3">
+                            <label for="generate_duration" class="form-label">
+                                <i class="fas fa-clock me-1 text-success"></i>
+                                Target Duration for New Script *
+                            </label>
+                            <select class="form-select" id="generate_duration" name="generate_duration">
+                                <optgroup label="Short Format">
+                                    <option value="30">30 seconds (Quick Hook)</option>
+                                    <option value="45" selected>45 seconds (Standard Short)</option>
+                                    <option value="60">60 seconds (Detailed Short)</option>
+                                </optgroup>
+                                <optgroup label="Medium Format">
+                                    <option value="120">2 minutes (Brief Story)</option>
+                                    <option value="180">3 minutes (Standard Story)</option>
+                                </optgroup>
+                                <optgroup label="Long Format">
+                                    <option value="300">5 minutes (Full Story)</option>
+                                    <option value="600">10 minutes (Detailed Analysis)</option>
+                                </optgroup>
+                            </select>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Choose how long you want the generated script to be
+                            </div>
                         </div>
-                    </div>
+
 
                     <button type="submit" class="btn btn-lg btn-primary w-100 shadow-lg" id="generateBtn">
                         <i class="fas fa-magic me-2"></i>

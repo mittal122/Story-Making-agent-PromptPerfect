@@ -283,13 +283,23 @@ h1, h2, h3, h4, h5, h6 {
     transform: scale(1.1);
 }
 
-/* Genre-based styling */
-#investigativeOptions {
-    border-left: 3px solid var(--bs-info);
-    padding-left: 1rem;
-    margin-left: 0.5rem;
-    background: rgba(23, 162, 184, 0.05);
-    border-radius: 0 8px 8px 0;
+/* Fix dropdown text visibility */
+.form-select {
+    color: var(--bs-body-color) !important;
+    background-color: var(--bs-body-bg) !important;
+    border-color: var(--bs-border-color) !important;
+}
+
+.form-select option {
+    color: var(--bs-body-color) !important;
+    background-color: var(--bs-body-bg) !important;
+}
+
+.form-select:focus {
+    color: var(--bs-body-color) !important;
+    background-color: var(--bs-body-bg) !important;
+    border-color: var(--bs-primary) !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
 /* Smooth transitions */

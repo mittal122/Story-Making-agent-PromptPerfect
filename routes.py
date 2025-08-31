@@ -63,8 +63,6 @@ def generate_script():
                     "topic": form_data.get('topic'),
                     "genre": form_data.get('genre'),
                     "description": form_data.get('description', ''),
-                    "location": form_data.get('location', ''),
-                    "subject_role": form_data.get('victim_role', ''),
                     "keywords": keywords
                 },
                 "seo": {
