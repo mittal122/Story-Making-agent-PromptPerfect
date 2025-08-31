@@ -104,3 +104,84 @@ def generate_hindi_script(input_payload):
     except Exception as e:
         logging.error(f"Gemini API error: {str(e)}")
         return {"error": f"API call failed: {str(e)}"}
+
+
+def humanize_hindi_script(raw_script):
+    """
+    Humanize an existing Hindi script to make it sound more natural and conversational
+    """
+    try:
+        # System instructions for humanization
+        humanization_instructions = """You are a Hindi script humanization expert. Your task is to take a raw or AI-generated Hindi script and rewrite it to sound completely natural, as if a human is actually speaking it.
+
+Key principles:
+- Make it sound conversational and natural
+- Use simple, everyday Hindi words that people actually speak
+- Add natural speech patterns, pauses, and emotional inflections
+- Keep the core message and facts intact
+- Use TTS-friendly formatting with ellipses (...) for natural pauses
+- Add emphasis with em dashes (—) where appropriate
+- Make it feel like a real person telling a story, not reading from a script
+- Remove any robotic or AI-sounding language
+- Add natural transitions and conversational connectors
+- Ensure it flows smoothly when spoken aloud
+
+Output the same JSON format with humanized content:"""
+        
+        # Construct the humanization prompt
+        prompt = f"""{humanization_instructions}
+
+{CORE_PROMPT}
+
+Original Raw Script to Humanize:
+{raw_script}
+
+Please rewrite this script to sound completely natural and human-like while maintaining the same structure and key information. Focus on making it conversational and authentic."""
+        
+        # Generate humanized content using Gemini
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                temperature=0.8,  # Slightly higher for more creative humanization
+                top_p=0.9,
+                response_mime_type="application/json"
+            )
+        )
+        
+        if not response.text:
+            return {"error": "Empty response from Gemini API"}
+        
+        # Parse the JSON response
+        try:
+            result = json.loads(response.text)
+            
+            # Validate required fields in response
+            required_fields = ["title", "vo_script", "on_screen_text", "description", "hashtags"]
+            missing_fields = [field for field in required_fields if field not in result]
+            
+            if missing_fields:
+                logging.warning(f"Response missing fields: {missing_fields}")
+                return {"error": f"Invalid response format: missing {missing_fields}"}
+            
+            # Validate title length
+            if len(result.get("title", "")) > 65:
+                result["title"] = result["title"][:62] + "..."
+            
+            # Add humanization note
+            if "notes" not in result:
+                result["notes"] = {}
+            result["notes"]["humanized"] = True
+            result["notes"]["original_length"] = len(raw_script)
+            result["notes"]["processing"] = "Script humanized for natural speech"
+            
+            return result
+            
+        except json.JSONDecodeError as e:
+            logging.error(f"Failed to parse JSON response: {e}")
+            logging.error(f"Raw response: {response.text}")
+            return {"error": "Invalid JSON response from API"}
+        
+    except Exception as e:
+        logging.error(f"Gemini API error during humanization: {str(e)}")
+        return {"error": f"Humanization failed: {str(e)}"}

@@ -12,6 +12,30 @@
             </div>
             <div class="card-body">
                 <form id="scriptForm">
+                    <!-- Mode Toggle -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Mode</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="modeToggle" name="mode">
+                            <label class="form-check-label" for="modeToggle" id="modeLabel">
+                                Generate New Script
+                            </label>
+                        </div>
+                        <div class="form-text" id="modeDescription">
+                            Create a new Hindi script from case details and timeline
+                        </div>
+                    </div>
+
+                    <!-- Raw Script Input (for humanization mode) -->
+                    <div class="mb-3" id="rawScriptSection" style="display: none;">
+                        <label for="raw_script" class="form-label">Raw Script to Humanize *</label>
+                        <textarea class="form-control" id="raw_script" name="raw_script" rows="8" 
+                                  placeholder="Paste your raw script here...&#10;&#10;The AI will rewrite it to sound more natural and human-like, as if a person is actually speaking it."></textarea>
+                        <div class="form-text">Paste the script you want to make sound more natural and conversational</div>
+                    </div>
+
+                    <!-- Generation Details (shown only in generate mode) -->
+                    <div id="generateModeFields">
                     <!-- Basic Information -->
                     <div class="mb-3">
                         <label for="topic" class="form-label">Topic *</label>
@@ -90,9 +114,11 @@
                                placeholder="e.g., सत्य सामने आए" value="सत्य सामने आए">
                     </div>
 
+                    </div>
+
                     <button type="submit" class="btn btn-primary w-100" id="generateBtn">
                         <i class="fas fa-magic me-2"></i>
-                        Generate Script
+                        <span id="buttonText">Generate Script</span>
                     </button>
                 </form>
             </div>

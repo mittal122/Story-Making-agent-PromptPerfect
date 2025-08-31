@@ -11,6 +11,9 @@ function initializeForm() {
     // Set default values
     document.getElementById('duration').value = 'short';
     document.getElementById('cta').value = 'सत्य सामने आए';
+    
+    // Initialize mode toggle
+    handleModeToggle();
 }
 
 function initializeEventListeners() {
@@ -22,6 +25,9 @@ function initializeEventListeners() {
     
     // Real-time character count for title
     document.getElementById('resultTitle').addEventListener('input', updateTitleLength);
+    
+    // Mode toggle
+    document.getElementById('modeToggle').addEventListener('change', handleModeToggle);
 }
 
 async function handleFormSubmit(event) {
@@ -40,20 +46,31 @@ async function handleFormSubmit(event) {
     showLoading();
     
     try {
-        // Prepare data
+        // Check mode
+        const isHumanizeMode = document.getElementById('modeToggle').checked;
+        
+        // Prepare data based on mode
         const data = {
-            topic: formData.get('topic'),
-            location: formData.get('location'),
-            victim_role: formData.get('victim_role'),
-            aspiration: formData.get('aspiration') || 'civil services',
-            duration: formData.get('duration'),
-            timeline: formData.get('timeline') ? formData.get('timeline').split('\n').filter(line => line.trim()) : [],
-            official_version: formData.get('official_version'),
-            family_version: formData.get('family_version'),
-            must_include: formData.get('must_include') ? formData.get('must_include').split('\n').filter(line => line.trim()) : [],
-            keywords: formData.get('keywords') ? formData.get('keywords').split(',').map(k => k.trim()).filter(k => k) : [],
-            cta: formData.get('cta') || 'सत्य सामने आए'
+            mode: isHumanizeMode ? 'humanize' : 'generate'
         };
+        
+        if (isHumanizeMode) {
+            // Humanize mode - only send raw script
+            data.raw_script = formData.get('raw_script');
+        } else {
+            // Generate mode - send all form fields
+            data.topic = formData.get('topic');
+            data.location = formData.get('location');
+            data.victim_role = formData.get('victim_role');
+            data.aspiration = formData.get('aspiration') || 'civil services';
+            data.duration = formData.get('duration');
+            data.timeline = formData.get('timeline') ? formData.get('timeline').split('\n').filter(line => line.trim()) : [];
+            data.official_version = formData.get('official_version');
+            data.family_version = formData.get('family_version');
+            data.must_include = formData.get('must_include') ? formData.get('must_include').split('\n').filter(line => line.trim()) : [];
+            data.keywords = formData.get('keywords') ? formData.get('keywords').split(',').map(k => k.trim()).filter(k => k) : [];
+            data.cta = formData.get('cta') || 'सत्य सामने आए';
+        }
         
         // Make API call
         const response = await fetch('/generate', {
@@ -203,6 +220,48 @@ ${Array.isArray(currentResult.hashtags) ? currentResult.hashtags.join(' ') : cur
 function showCopyToast() {
     const toast = new bootstrap.Toast(document.getElementById('copyToast'));
     toast.show();
+}
+
+function handleModeToggle() {
+    const modeToggle = document.getElementById('modeToggle');
+    const isHumanizeMode = modeToggle.checked;
+    
+    const modeLabel = document.getElementById('modeLabel');
+    const modeDescription = document.getElementById('modeDescription');
+    const buttonText = document.getElementById('buttonText');
+    const rawScriptSection = document.getElementById('rawScriptSection');
+    const generateModeFields = document.getElementById('generateModeFields');
+    const rawScriptInput = document.getElementById('raw_script');
+    
+    if (isHumanizeMode) {
+        // Switch to humanize mode
+        modeLabel.textContent = 'Humanize Existing Script';
+        modeDescription.textContent = 'Make an existing script sound more natural and human-like';
+        buttonText.textContent = 'Humanize Script';
+        rawScriptSection.style.display = 'block';
+        generateModeFields.style.display = 'none';
+        rawScriptInput.required = true;
+        
+        // Remove required from generate mode fields
+        document.getElementById('topic').required = false;
+        document.getElementById('location').required = false;
+        document.getElementById('victim_role').required = false;
+        document.getElementById('duration').required = false;
+    } else {
+        // Switch to generate mode
+        modeLabel.textContent = 'Generate New Script';
+        modeDescription.textContent = 'Create a new Hindi script from case details and timeline';
+        buttonText.textContent = 'Generate Script';
+        rawScriptSection.style.display = 'none';
+        generateModeFields.style.display = 'block';
+        rawScriptInput.required = false;
+        
+        // Add required to generate mode fields
+        document.getElementById('topic').required = true;
+        document.getElementById('location').required = true;
+        document.getElementById('victim_role').required = true;
+        document.getElementById('duration').required = true;
+    }
 }
 
 // Form validation
