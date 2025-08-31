@@ -64,15 +64,17 @@ def generate_script():
                 except json.JSONDecodeError:
                     keywords = keywords.split(',') if keywords else []
             
-            # Build input payload for Gemini API
+            # Build input payload for Gemini API with YouTube optimization
+            duration_seconds = int(form_data.get('duration_seconds', 45))
             input_payload = {
                 "api_key_mode": "env",
                 "generation": {
-                    "duration": form_data.get('duration', 'short'),
+                    "duration_seconds": duration_seconds,
+                    "duration_type": "short" if duration_seconds <= 60 else "long",
                     "language": "hi",
                     "voice_tags": True,
-                    "include_titles": True,
-                    "include_description": True
+                    "youtube_optimized": True,
+                    "algorithm_focus": "maximum_reach"
                 },
                 "case": {
                     "topic": form_data.get('topic'),
@@ -87,8 +89,10 @@ def generate_script():
                 },
                 "seo": {
                     "primary_keywords": keywords,
-                    "hashtag_style": "shorts",
-                    "audience": "16-35, Hindi, news/moral storytelling"
+                    "hashtag_style": "youtube_optimized",
+                    "audience": "16-35, Hindi, news/moral storytelling",
+                    "platform": "youtube",
+                    "optimization_goal": "viral_reach"
                 }
             }
             

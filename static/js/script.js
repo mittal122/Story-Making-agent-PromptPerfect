@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initializeForm() {
     // Set default values
-    document.getElementById('duration').value = 'short';
+    document.getElementById('duration_seconds').value = '45';
     document.getElementById('cta').value = 'सत्य सामने आए';
     
     // Initialize mode toggle
@@ -63,7 +63,7 @@ async function handleFormSubmit(event) {
             data.location = formData.get('location');
             data.victim_role = formData.get('victim_role');
             data.aspiration = formData.get('aspiration') || 'civil services';
-            data.duration = formData.get('duration');
+            data.duration_seconds = parseInt(formData.get('duration_seconds')) || 45;
             data.timeline = formData.get('timeline') ? formData.get('timeline').split('\n').filter(line => line.trim()) : [];
             data.official_version = formData.get('official_version');
             data.family_version = formData.get('family_version');
@@ -101,6 +101,15 @@ function showLoading() {
     document.getElementById('resultContainer').style.display = 'none';
     document.getElementById('loadingSpinner').style.display = 'block';
     document.getElementById('copyAllBtn').style.display = 'none';
+    
+    // Show button spinner
+    const generateBtn = document.getElementById('generateBtn');
+    const buttonSpinner = document.getElementById('buttonSpinner');
+    const buttonText = document.getElementById('buttonText');
+    
+    generateBtn.disabled = true;
+    buttonSpinner.style.display = 'inline-block';
+    buttonText.textContent = 'Generating...';
 }
 
 function showError(message) {
@@ -111,6 +120,9 @@ function showError(message) {
     
     document.getElementById('errorText').textContent = message;
     document.getElementById('errorMessage').style.display = 'block';
+    
+    // Reset button state
+    resetButtonState();
 }
 
 function displayResult(result) {
@@ -139,12 +151,24 @@ function displayResult(result) {
         document.getElementById('resultNotes').innerHTML = notesHtml;
     }
     
+    // Display YouTube tags if available
+    if (result.youtube_tags && result.youtube_tags.length > 0) {
+        document.getElementById('resultYoutubeTags').value = Array.isArray(result.youtube_tags) 
+            ? result.youtube_tags.join(', ') : result.youtube_tags || '';
+        document.getElementById('youtubeTagsSection').style.display = 'block';
+    } else {
+        document.getElementById('youtubeTagsSection').style.display = 'none';
+    }
+    
     // Update title length
     updateTitleLength();
     
     // Show result container and copy button
     document.getElementById('resultContainer').style.display = 'block';
     document.getElementById('copyAllBtn').style.display = 'inline-block';
+    
+    // Reset button state
+    resetButtonState();
 }
 
 function updateTitleLength() {
@@ -197,6 +221,9 @@ ${currentResult.description || ''}
 
 HASHTAGS:
 ${Array.isArray(currentResult.hashtags) ? currentResult.hashtags.join(' ') : currentResult.hashtags || ''}
+
+YOUTUBE TAGS:
+${Array.isArray(currentResult.youtube_tags) ? currentResult.youtube_tags.join(', ') : currentResult.youtube_tags || ''}
     `.trim();
     
     try {
@@ -246,7 +273,7 @@ function handleModeToggle() {
         document.getElementById('topic').required = false;
         document.getElementById('location').required = false;
         document.getElementById('victim_role').required = false;
-        document.getElementById('duration').required = false;
+        document.getElementById('duration_seconds').required = false;
     } else {
         // Switch to generate mode
         modeLabel.textContent = 'Generate New Script';
@@ -260,8 +287,19 @@ function handleModeToggle() {
         document.getElementById('topic').required = true;
         document.getElementById('location').required = true;
         document.getElementById('victim_role').required = true;
-        document.getElementById('duration').required = true;
+        document.getElementById('duration_seconds').required = true;
     }
+}
+
+function resetButtonState() {
+    const generateBtn = document.getElementById('generateBtn');
+    const buttonSpinner = document.getElementById('buttonSpinner');
+    const buttonText = document.getElementById('buttonText');
+    const isHumanizeMode = document.getElementById('modeToggle').checked;
+    
+    generateBtn.disabled = false;
+    buttonSpinner.style.display = 'none';
+    buttonText.textContent = isHumanizeMode ? 'Humanize Script' : 'Generate Script';
 }
 
 // Form validation
