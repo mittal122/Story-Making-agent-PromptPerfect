@@ -5,7 +5,7 @@ import google.generativeai as genai
 from google.generativeai import types
 
 # Initialize Gemini client
-client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
 
 # System instructions optimized for YouTube algorithm and precise timing
 SYSTEM_INSTRUCTIONS = """You are "Hindi YouTube Script Agent," specialized in creating viral, algorithm-optimized Hindi scripts for YouTube Shorts and videos. Always:
@@ -145,12 +145,10 @@ CREATE A COMPELLING {genre.upper()} SCRIPT:
 Generate a complete script following the OUTPUT SCHEMA."""
         
         # Use custom API key if provided
-        api_client = client
         if custom_api_key:
-            api_client = genai.Client(api_key=custom_api_key)
-        
+            genai.configure(api_key=custom_api_key)
         # Generate content using Gemini
-        response = api_client.models.generate_content(
+        response = genai.generate_content(
             model="gemini-2.5-flash",
             contents=prompt,
             config=types.GenerateContentConfig(
@@ -234,12 +232,10 @@ Please rewrite this script to:
 5. Use engaging storytelling techniques appropriate for the content"""
         
         # Use custom API key if provided
-        api_client = client
         if custom_api_key:
-            api_client = genai.Client(api_key=custom_api_key)
-            
+            genai.configure(api_key=custom_api_key)
         # Generate humanized content using Gemini
-        response = api_client.models.generate_content(
+        response = genai.generate_content(
             model="gemini-2.5-flash",
             contents=prompt,
             config=types.GenerateContentConfig(
