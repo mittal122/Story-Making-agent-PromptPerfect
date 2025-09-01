@@ -147,11 +147,10 @@ Generate a complete script following the OUTPUT SCHEMA."""
         # Use custom API key if provided
         if custom_api_key:
             genai.configure(api_key=custom_api_key)
-        # Generate content using Gemini
-        response = genai.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt,
-            config=types.GenerateContentConfig(
+        model = genai.GenerativeModel("gemini-2.5-flash")
+        response = model.generate_content(
+            prompt,
+            generation_config=types.GenerationConfig(
                 temperature=0.7,
                 top_p=0.9,
                 response_mime_type="application/json"
@@ -234,11 +233,10 @@ Please rewrite this script to:
         # Use custom API key if provided
         if custom_api_key:
             genai.configure(api_key=custom_api_key)
-        # Generate humanized content using Gemini
-        response = genai.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt,
-            config=types.GenerateContentConfig(
+        model = genai.GenerativeModel("gemini-2.5-flash")
+        response = model.generate_content(
+            prompt,
+            generation_config=types.GenerationConfig(
                 temperature=0.8,  # Slightly higher for more creative humanization
                 top_p=0.9,
                 response_mime_type="application/json"
