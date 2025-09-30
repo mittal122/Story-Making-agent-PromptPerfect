@@ -2,7 +2,7 @@ import json
 import logging
 from flask import render_template, request, jsonify, flash
 from app import app
-from gemini_service import generate_hindi_script, humanize_hindi_script
+from gemini_service import generate_story_script, humanize_story_script
 
 @app.route('/')
 def index():
@@ -42,7 +42,7 @@ def generate_script():
             duration_seconds = int(form_data.get('duration_seconds', 45))
             try:
                 custom_api_key = form_data.get('api_key')
-                result = humanize_hindi_script(form_data.get('raw_script'), duration_seconds, custom_api_key)
+                result = humanize_story_script(form_data.get('raw_script'), duration_seconds, custom_api_key)
             except Exception as api_error:
                 logging.error(f"Gemini API error in humanize mode: {str(api_error)}")
                 
@@ -89,7 +89,7 @@ def generate_script():
             # Generate script using Gemini API
             try:
                 custom_api_key = form_data.get('api_key')
-                result = generate_hindi_script(input_payload, custom_api_key)
+                result = generate_story_script(input_payload, custom_api_key)
             except Exception as api_error:
                 logging.error(f"Gemini API error in generate mode: {str(api_error)}")
                 

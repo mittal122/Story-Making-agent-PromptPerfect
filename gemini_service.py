@@ -7,102 +7,132 @@ from google.generativeai import types
 # Initialize Gemini client
 genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
 
-# System instructions optimized for YouTube algorithm and precise timing
-SYSTEM_INSTRUCTIONS = """You are "Hindi YouTube Script Agent," specialized in creating viral, algorithm-optimized Hindi scripts for YouTube Shorts and videos. Always:
-- Keep language simple, spoken Hindi with short lines optimized for engagement
-- Use neutral/legal‑safe framing: prefer "आरोप/दावा/कहा जा रहा है" vs direct blame
-- Optimize for TTS: short clauses; ellipses (…) for breath; em dashes (—) for emphasis; optional tags [pause] [soft] [emphasis] used sparingly
-- Generate content that fits EXACT timing requirements (calculate words per minute for precise duration)
-- Output exactly in the required JSON schema and nothing else
-- Focus on YouTube algorithm optimization for maximum reach and engagement
+# System instructions optimized for storytelling and content creation
+SYSTEM_INSTRUCTIONS = """You are an advanced storytelling and content creation agent specialized in transforming raw subtitles or draft text into highly engaging YouTube Shorts scripts.
+Your goal is to make the output look original, professional, and optimized for maximum audience retention and discoverability.
 
-YOUTUBE ALGORITHM OPTIMIZATION:
-- Titles: Hook-first, trending keywords, emotional triggers, under 60 characters for mobile
-- Descriptions: First 125 characters crucial for search ranking, include main keywords
-- Hashtags: Mix trending (#Viral, #YouTubeShorts) with niche tags, 15-30 total
-- Content: Create curiosity gaps, cliffhangers, and engagement hooks every 3-5 seconds
-- Timing: Precise word count calculations (150 WPM for Hindi TTS)
+CORE PRINCIPLES:
+- Transform raw input into compelling short-form story scripts using advanced storytelling techniques
+- Hook viewers in the first few seconds with immediate attention-grabbing content
+- Create curiosity gaps & suspense to keep viewers watching until the end
+- Build relatability by connecting with audience emotions and real-life situations
+- Ensure clear progression: beginning → conflict/problem → resolution/insight
+- Deliver concise but powerful content where every word adds value
+- End with call-to-thought that leaves viewers with something thought-provoking
+- Make final scripts feel completely original, not copied from input text
 
-SAFETY AND STYLE GUARDRAILS (always enforce):
-- Defamation safety: no definitive guilt; frame as "परिवार का आरोप/आधिकारिक दावा"
-- Political safety: avoid advocacy; stick to narrative and questions
-- Sensitive events: avoid graphic detail; keep compassionate tone
-- Respect cultural/religious sentiments
-- Check length limits strictly; avoid run‑on sentences
-- Do not include external URLs
-- Titles optimized for CTR and SEO
-- Descriptions formatted for YouTube algorithm
-- Hashtags researched for trending topics"""
+STORYTELLING TECHNIQUES:
+- Use conversational, emotionally engaging language that feels natural
+- Prioritize clarity + impact in every sentence
+- Avoid robotic or repetitive phrasing
+- Maintain originality – outputs should look crafted, not AI-generated
+- Structure content to retain attention until the very end
+- Optimize pacing for short-form content (30–60 seconds)
+- Include natural emotional beats and rhythm"""
 
-# Genre-specific storytelling guidelines
+# Genre-specific storytelling guidelines for English content
 GENRE_GUIDELINES = {
-    "mysterious": "Create suspense and intrigue with unanswered questions, dramatic pauses, and revelation techniques. Use phrases like 'क्या होगा अगर...', 'रहस्य ये है', 'सच क्या है?'",
-    "motivational": "Use inspiring language, success stories, and emotional appeals. Include phrases like 'आप भी कर सकते हैं', 'सफलता की कहानी', 'सपने पूरे होते हैं'",
-    "thriller": "Build tension with quick pacing, shocking reveals, and cliffhangers. Use dramatic phrases like 'अचानक', 'शॉकिंग सच', 'ये तो सिर्फ शुरुआत थी'",
-    "educational": "Clear explanations, step-by-step breakdowns, and learning points. Use phrases like 'आइए जानते हैं', 'समझिए', 'इससे क्या सीख?'",
-    "investigative": "Fact-based narrative with evidence and analysis. Use neutral framing like 'आरोप है', 'दावा किया गया', 'जांच जारी'",
-    "inspirational": "Uplifting stories with emotional connection and hope. Use phrases like 'प्रेरणादायक', 'उम्मीद की किरण', 'जीवन बदल गया'",
-    "dramatic": "High emotion, conflict, and resolution. Use expressive language with dramatic emphasis and emotional peaks",
-    "comedy": "Light-hearted, humorous content with funny situations and relatable jokes. Use phrases like 'हंसी नहीं रुकेगी', 'मजेदार बात', 'कॉमेडी का तड़का', 'दिल खुश हो जाएगा'",
-    "love": "Romantic, emotional stories with heartfelt moments and relationship dynamics. Use phrases like 'प्यार की कहानी', 'दिल छू जाएगा', 'रोमांस', 'इमोशनल मोमेंट्स'",
-    "informative": "Clear, factual presentation with organized information and practical insights"
+    "mysterious": "Create suspense and intrigue with unanswered questions, dramatic pauses, and revelation techniques. Use phrases like 'But what if...', 'The mystery is', 'What's the truth?', 'Here's what nobody tells you'",
+    "motivational": "Use inspiring language, success stories, and emotional appeals. Include phrases like 'You can do this too', 'Success story that will inspire you', 'Dreams do come true', 'This will change your perspective'",
+    "thriller": "Build tension with quick pacing, shocking reveals, and cliffhangers. Use dramatic phrases like 'Suddenly everything changed', 'The shocking truth', 'This was just the beginning', 'You won't believe what happened next'",
+    "educational": "Clear explanations, step-by-step breakdowns, and learning points. Use phrases like 'Here's what you need to know', 'Let me break this down', 'The lesson here is', 'This will blow your mind'",
+    "investigative": "Fact-based narrative with evidence and analysis. Use neutral framing like 'According to reports', 'Evidence suggests', 'Investigation reveals', 'The facts show'",
+    "inspirational": "Uplifting stories with emotional connection and hope. Use phrases like 'This will inspire you', 'A ray of hope', 'Life-changing moment', 'Against all odds'",
+    "dramatic": "High emotion, conflict, and resolution. Use expressive language with dramatic emphasis and emotional peaks. Focus on human drama and emotional storytelling",
+    "comedy": "Light-hearted, humorous content with funny situations and relatable jokes. Use phrases like 'You won't stop laughing', 'This is hilarious', 'Comedy gold', 'Too funny to miss'",
+    "love": "Romantic, emotional stories with heartfelt moments and relationship dynamics. Use phrases like 'Love story that touches hearts', 'Emotional moments', 'Romance at its best', 'This will make you cry'",
+    "informative": "Clear, factual presentation with organized information and practical insights that add real value to viewers' lives"
 }
 
-CORE_PROMPT = """Follow the SYSTEM INSTRUCTIONS and SAFETY GUARDRAILS. Use the INPUT SCHEMA values to generate output strictly in the OUTPUT SCHEMA JSON. Do not add commentary.
+CORE_PROMPT = """Follow the SYSTEM INSTRUCTIONS for storytelling and content creation. Take the raw subtitle text (input) as base material and transform it into professional short-form story scripts.
 
-PRECISE TIMING CALCULATIONS:
-- Hindi TTS: 150 words per minute average
-- Short (30s): ~75 words | (45s): ~112 words | (60s): ~150 words
-- Medium (2min): ~300 words | (3min): ~450 words
-- Long (5min): ~750 words | (10min): ~1500 words
-- Include pauses and emphasis in word count
+For each input, you must generate the following:
 
-YOUTUBE ALGORITHM OPTIMIZATION STEPS:
-1) Validate inputs and calculate exact word count for specified duration
-2) Title optimization: Start with emotional hook + trending keywords + curiosity gap (50-60 chars)
-3) Description optimization: 
-   - First line: Main keywords + emotional hook
-   - Second line: Conflict/mystery statement
-   - Bullet points with timestamps
-   - Call-to-action for engagement
-   - Related keywords for SEO
-4) Hashtag strategy: 15-30 tags mixing:
-   - Trending: #Viral #YouTubeShorts #Trending
-   - Category: #Hindi #News #Investigation #Crime #Justice
-   - Niche: Topic-specific tags
-   - Location-based tags
-5) Content structure:
-   - First 3 seconds: Strong hook question
-   - Every 5-7 seconds: Engagement point or cliffhanger
-   - Last 3 seconds: Strong CTA for likes/shares
-6) On-screen text: Short, punchy phrases that complement audio
-7) Return optimized JSON for maximum YouTube reach
+STORY SCRIPT (3 variations):
+- Written in compelling, conversational style
+- Structured to retain attention until the very end
+- Optimized for short-form pacing (30–60 seconds)
+- Hook in first few seconds (grab immediate attention)
+- Curiosity gaps & suspense to keep viewers watching
+- Relatability (connect with audience emotions)
+- Clear progression (beginning → conflict → resolution)
+- Concise but powerful delivery (every word adds value)
+- Call-to-thought (thought-provoking ending)
 
-CONTENT STRUCTURE BY DURATION:
-- 30s: Hook(3s) → Setup(7s) → Twist(10s) → Revelation(7s) → CTA(3s)
-- 45s: Hook(5s) → Setup(10s) → Timeline(15s) → Conflict(10s) → CTA(5s)
-- 60s: Hook(5s) → Setup(12s) → Timeline(20s) → Evidence(18s) → CTA(5s)
-- 3-5min: Full investigative arc with detailed timeline and analysis
+VIDEO TITLE (3 variations):
+- Click-worthy and curiosity-driven
+- Includes relevant keywords for better ranking
+- Short (max 70 characters)
+- Emotional triggers and hooks
 
-OUTPUT SCHEMA (optimized for YouTube algorithm):
+DESCRIPTION (3 variations):
+- Engaging and SEO-friendly
+- Includes relevant hashtags and keywords
+- Highlights core message/value of video
+- Encourages interaction (likes, comments, shares)
+- First 125 characters optimized for search
+
+TAGS (at least 10 per variation):
+- SEO-optimized, relevant to the story
+- Combination of broad and niche keywords
+- Helps video reach the right audience
+- Mix of trending and topic-specific tags
+
+TIMING CALCULATIONS:
+- English narration: 150-160 words per minute average
+- 30 seconds: ~75-80 words
+- 45 seconds: ~112-120 words  
+- 60 seconds: ~150-160 words
+
+OUTPUT REQUIREMENTS:
+- Always prioritize clarity + impact
+- Avoid robotic or repetitive phrasing
+- Maintain originality – outputs should look crafted, not AI-generated
+- Use natural, emotionally engaging language
+- Ensure the final script feels original and not copied from input
+
+OUTPUT SCHEMA:
 {
-  "title": "string <=60 chars, hook-first with trending keywords",
-  "vo_script": "string; exact word count for specified duration; TTS-optimized with engagement hooks",
-  "on_screen_text": ["5-8 punchy phrases, 2-3 words each"],
-  "description": "YouTube-optimized description with keywords in first 125 chars, timestamps, hashtags, and CTA",
-  "hashtags": ["15-30 trending and niche tags for maximum reach"],
-  "youtube_tags": ["additional SEO tags for YouTube backend"],
-  "notes": {
-    "exact_duration_seconds": "calculated timing",
-    "word_count": "precise count for TTS",
-    "engagement_hooks": "hooks per 5-second intervals",
-    "algorithm_score": "optimization rating"
-  }
+  "story_scripts": [
+    {
+      "version": 1,
+      "script": "Compelling story script text",
+      "word_count": 120,
+      "estimated_duration": "45 seconds"
+    },
+    {
+      "version": 2, 
+      "script": "Alternative story script text",
+      "word_count": 125,
+      "estimated_duration": "47 seconds"
+    },
+    {
+      "version": 3,
+      "script": "Third story script variation",
+      "word_count": 115,
+      "estimated_duration": "43 seconds"
+    }
+  ],
+  "video_titles": [
+    "First title variation (max 70 chars)",
+    "Second title variation (max 70 chars)", 
+    "Third title variation (max 70 chars)"
+  ],
+  "descriptions": [
+    "First description variation with SEO optimization",
+    "Second description with different angle",
+    "Third description focusing on engagement"
+  ],
+  "tags": [
+    ["tag1", "tag2", "tag3", "etc - at least 10 tags"],
+    ["different", "tag", "set", "for variation 2"],
+    ["third", "tag", "variation", "set"]
+  ]
 }"""
 
-def generate_hindi_script(input_payload, custom_api_key=None):
+def generate_story_script(input_payload, custom_api_key=None):
     """
-    Generate Hindi YouTube script using Gemini API with genre-based storytelling
+    Generate English YouTube Shorts script using Gemini API with storytelling techniques
     """
     try:
         # Extract content details
@@ -120,7 +150,7 @@ def generate_hindi_script(input_payload, custom_api_key=None):
         # Calculate target word count
         target_words = int((duration_seconds / 60) * 150)
         
-        # Construct genre-specific prompt
+        # Construct storytelling prompt
         prompt = f"""{SYSTEM_INSTRUCTIONS}
 
 {CORE_PROMPT}
@@ -128,23 +158,23 @@ def generate_hindi_script(input_payload, custom_api_key=None):
 GENRE-SPECIFIC GUIDELINES:
 {genre_guidance}
 
-SCRIPT REQUIREMENTS:
-- Topic: {topic}
+INPUT CONTENT TO TRANSFORM:
+- Topic/Raw Content: {topic}
 - Genre: {genre.title()}
-- Duration: {duration_seconds} seconds (approximately {target_words} words)
-- Description: {description if description else 'Generate creatively based on topic and genre'}
-- Language: Hindi (conversational and engaging)
-- Format: YouTube-optimized for maximum reach
+- Target Duration: {duration_seconds} seconds (approximately {target_words} words)
+- Additional Context: {description if description else 'Transform creatively using storytelling techniques'}
+- Language: English (conversational and engaging)
+- Format: YouTube Shorts optimized for maximum engagement
 
-CREATE A COMPELLING {genre.upper()} SCRIPT:
-1. Hook viewers in first 3 seconds with genre-appropriate opening
-2. Develop story using {genre} storytelling techniques
-3. Maintain engagement with genre-specific language and pacing
-4. Include natural transitions and emotional connection
-5. End with strong call-to-action
-6. Ensure exact timing: {duration_seconds} seconds = ~{target_words} words
+TRANSFORM THIS CONTENT INTO COMPELLING STORYTELLING:
+1. Hook viewers immediately with attention-grabbing opening
+2. Apply {genre} storytelling techniques throughout
+3. Create curiosity gaps and emotional connection
+4. Build clear story progression (beginning → conflict → resolution)
+5. End with thought-provoking conclusion
+6. Target timing: {duration_seconds} seconds = ~{target_words} words
 
-Generate a complete script following the OUTPUT SCHEMA."""
+Generate 3 variations following the OUTPUT SCHEMA with story scripts, titles, descriptions, and tags."""
         
         # Use custom API key if provided
         if custom_api_key:
@@ -190,30 +220,31 @@ Generate a complete script following the OUTPUT SCHEMA."""
         return {"error": f"API call failed: {str(e)}"}
 
 
-def humanize_hindi_script(raw_script, duration_seconds=45, custom_api_key=None):
+def humanize_story_script(raw_script, duration_seconds=45, custom_api_key=None):
     """
-    Humanize an existing Hindi script to make it sound more natural and conversational
+    Humanize an existing script to make it sound more natural and engaging for storytelling
     """
     try:
         # System instructions for humanization
-        humanization_instructions = """You are a Hindi script humanization expert. Your task is to take a raw or AI-generated Hindi script and rewrite it to sound completely natural, as if a human is actually speaking it.
+        humanization_instructions = """You are a storytelling script humanization expert. Your task is to take raw subtitle text or draft content and transform it into a compelling, natural-sounding story script optimized for YouTube Shorts.
 
 Key principles:
-- Make it sound conversational and natural
-- Use simple, everyday Hindi words that people actually speak
+- Transform the content using advanced storytelling techniques
+- Make it sound conversational and engaging
+- Use simple, everyday English that people actually connect with
 - Add natural speech patterns, pauses, and emotional inflections
-- Keep the core message and facts intact
-- Use TTS-friendly formatting with ellipses (...) for natural pauses
-- Add emphasis with em dashes (—) where appropriate
-- Make it feel like a real person telling a story, not reading from a script
+- Keep the core message and facts intact but make them compelling
+- Add storytelling elements: hooks, curiosity gaps, emotional beats
 - Remove any robotic or AI-sounding language
 - Add natural transitions and conversational connectors
-- Ensure it flows smoothly when spoken aloud
+- Ensure it flows smoothly when spoken aloud and keeps viewers engaged
+- Create clear progression: beginning → conflict/problem → resolution/insight
+- End with thought-provoking conclusion that encourages engagement
 
 Output the same JSON format with humanized content:"""
         
         # Calculate target word count based on duration
-        target_words = int((duration_seconds / 60) * 150)  # 150 WPM for Hindi TTS
+        target_words = int((duration_seconds / 60) * 150)  # 150 WPM for English TTS
         
         # Construct the humanization prompt with timing
         prompt = f"""{humanization_instructions}
@@ -222,15 +253,16 @@ Output the same JSON format with humanized content:"""
 
 Target Duration: {duration_seconds} seconds (approximately {target_words} words)
 
-Original Raw Script to Humanize:
+Original Raw Content to Transform:
 {raw_script}
 
-Please rewrite this script to:
-1. Sound completely natural and human-like
+Please transform this content to:
+1. Sound completely natural and engaging with storytelling techniques
 2. Fit exactly {duration_seconds} seconds when spoken (around {target_words} words)
-3. Maintain the core message while making it conversational
-4. Add proper pacing with natural pauses and emphasis
-5. Use engaging storytelling techniques appropriate for the content"""
+3. Maintain the core message while making it compelling
+4. Add proper pacing with emotional beats and story progression
+5. Use advanced storytelling techniques: hooks, curiosity gaps, clear progression
+6. Create 3 variations following the OUTPUT SCHEMA"""
         
         # Use custom API key if provided
         if custom_api_key:

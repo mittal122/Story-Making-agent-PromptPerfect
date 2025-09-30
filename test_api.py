@@ -11,7 +11,7 @@ import json
 # Add the api directory to Python path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'api'))
 
-from gemini_service import generate_hindi_script, humanize_hindi_script
+from gemini_service import generate_story_script, humanize_story_script
 
 def test_generate_script():
     """Test script generation"""
@@ -42,7 +42,7 @@ def test_generate_script():
     
     # This will fail without API key, but we can check if the function structure works
     try:
-        result = generate_hindi_script(input_payload)
+        result = generate_story_script(input_payload)
         if result:
             print("✓ Script generation function structure is correct")
             return True
@@ -64,7 +64,7 @@ def test_humanize_script():
     raw_script = "यह एक test script है। हम इसे humanize करने की कोशिश कर रहे हैं।"
     
     try:
-        result = humanize_hindi_script(raw_script, 45)
+        result = humanize_story_script(raw_script, 45)
         if result:
             print("✓ Script humanization function structure is correct")
             return True
