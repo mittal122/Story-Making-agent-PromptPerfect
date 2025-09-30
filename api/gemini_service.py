@@ -43,8 +43,6 @@ GENRE_GUIDELINES = {
     "investigative": "Fact-based narrative with evidence and analysis. Use neutral framing like 'आरोप है', 'दावा किया गया', 'जांच जारी'",
     "inspirational": "Uplifting stories with emotional connection and hope. Use phrases like 'प्रेरणादायक', 'उम्मीद की किरण', 'जीवन बदल गया'",
     "dramatic": "High emotion, conflict, and resolution. Use expressive language with dramatic emphasis and emotional peaks",
-    "comedy": "Light-hearted, humorous content with funny situations and relatable jokes. Use phrases like 'हंसी नहीं रुकेगी', 'मजेदार बात', 'कॉमेडी का तड़का', 'दिल खुश हो जाएगा'",
-    "love": "Romantic, emotional stories with heartfelt moments and relationship dynamics. Use phrases like 'प्यार की कहानी', 'दिल छू जाएगा', 'रोमांस', 'इमोशनल मोमेंट्स'",
     "informative": "Clear, factual presentation with organized information and practical insights"
 }
 

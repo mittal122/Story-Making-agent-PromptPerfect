@@ -1,0 +1,13 @@
+{
+  "name": "promptperfect",
+  "version": "1.0.0",
+  "description": "Hindi Script Generator - Full-stack web application for generating YouTube-optimized Hindi scripts",
+  "main": "api/index.py",
+  "scripts": {
+    "build": "cd frontend/frontend && npm install && npm run build",
+    "dev": "cd frontend/frontend && npm run dev"
+  },
+  "keywords": ["hindi", "script", "generator", "youtube", "ai", "gemini"],
+  "author": "Your Name",
+  "license": "MIT"
+}

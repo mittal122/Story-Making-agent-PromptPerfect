@@ -1,0 +1,322 @@
+/* Enhanced dark theme and aesthetics */
+.form-control, .form-select {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bs-dark);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--bs-light);
+  transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: var(--bs-warning);
+  box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+.card {
+  background: linear-gradient(135deg, rgba(33, 37, 41, 0.95), rgba(52, 58, 64, 0.95));
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bg-gradient {
+  background: linear-gradient(135deg, var(--bs-primary), var(--bs-info)) !important;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #0056b3, #004085);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}
+
+/* Hindi text styling */
+#resultScript, #resultDescription, #resultTitle, #resultOnScreen {
+  font-family: 'Noto Sans Devanagari', 'Segoe UI', Arial, sans-serif;
+  line-height: 1.6;
+}
+
+/* Loading spinner container */
+#loadingSpinner {
+  padding: 3rem 0;
+  background: radial-gradient(circle, rgba(0, 123, 255, 0.1), transparent);
+  border-radius: 15px;
+}
+
+.spinner-border {
+  color: var(--bs-warning) !important;
+}
+
+/* Glowing effect for active elements */
+.card:hover {
+  box-shadow: 0 10px 30px rgba(0, 123, 255, 0.2);
+  transform: translateY(-5px);
+  transition: all 0.3s ease;
+}
+
+/* Enhanced result container */
+#resultContainer {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* YouTube-style aesthetics */
+.form-text {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+}
+
+.text-warning {
+  color: #ffc107 !important;
+}
+
+.text-success {
+  color: #28a745 !important;
+}
+
+/* Custom scrollbar */
+textarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+textarea::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  background: var(--bs-warning);
+  border-radius: 4px;
+}
+
+textarea::-webkit-scrollbar-thumb:hover {
+  background: #e0a800;
+}
+
+/* Result container styling */
+#resultContainer .position-relative {
+  position: relative;
+}
+
+#resultContainer .btn-sm {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Character count styling */
+.form-text {
+  font-size: 0.875rem;
+}
+
+/* Empty state styling */
+#emptyState {
+  padding: 3rem 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.05), transparent);
+  border-radius: 15px;
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+}
+
+#emptyState .fa-video {
+  opacity: 0.3;
+  color: var(--bs-warning);
+}
+
+/* Floating animation for icons */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.fa-pen-fancy, .fa-file-alt {
+  animation: float 3s ease-in-out infinite;
+}
+
+.fa-file-alt {
+  animation-delay: 1.5s;
+}
+
+/* Toast styling */
+.toast {
+  border: none;
+  background-color: var(--bs-dark);
+  color: var(--bs-light);
+}
+
+/* Enhanced responsive design */
+@media (max-width: 768px) {
+  .card {
+    margin-bottom: 2rem;
+    border-radius: 15px;
+  }
+    
+  .position-absolute.top-0.end-0 {
+    position: static !important;
+    margin: 0.5rem 0 0 0 !important;
+    width: 100%;
+  }
+    
+  .btn-lg {
+    padding: 15px 20px;
+    font-size: 1.1rem;
+  }
+    
+  .card-header {
+    border-radius: 15px 15px 0 0 !important;
+  }
+}
+
+/* Dark theme enhancements */
+body {
+  background: radial-gradient(ellipse at center, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1400px;
+}
+
+/* Advanced button styling */
+.btn-outline-light:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--bs-warning);
+  color: var(--bs-warning);
+}
+
+/* Notification styling */
+.alert {
+  border: none;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+}
+
+.alert-danger {
+  background: rgba(220, 53, 69, 0.1);
+  color: #ff6b6b;
+  border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+/* Form validation styles */
+.was-validated .form-control:invalid {
+  border-color: var(--bs-danger);
+}
+
+.was-validated .form-control:valid {
+  border-color: var(--bs-success);
+}
+
+/* Enhanced font loading */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Premium typography */
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+/* YouTube-style progress indicator */
+.progress-bar {
+  background: linear-gradient(90deg, var(--bs-primary), var(--bs-success));
+  transition: width 0.6s ease;
+}
+
+/* Enhanced shadow effects */
+.shadow-lg {
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 3px 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Mode selection cards */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+#mode1Card, #mode2Card {
+  transition: all 0.3s ease;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+#mode1Card:hover, #mode2Card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.15);
+}
+
+#mode1Card.active {
+  border-color: var(--bs-warning) !important;
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 193, 7, 0.05));
+}
+
+#mode2Card.active {
+  border-color: var(--bs-success) !important;
+  background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(40, 167, 69, 0.05));
+}
+
+.mode-icon {
+  transition: transform 0.3s ease;
+}
+
+.card.active .mode-icon {
+  transform: scale(1.1);
+}
+
+/* Fix dropdown text visibility */
+.form-select {
+  color: var(--bs-body-color) !important;
+  background-color: var(--bs-body-bg) !important;
+  border-color: var(--bs-border-color) !important;
+}
+
+.form-select option {
+  color: var(--bs-body-color) !important;
+  background-color: var(--bs-body-bg) !important;
+}
+
+.form-select:focus {
+  color: var(--bs-body-color) !important;
+  background-color: var(--bs-body-bg) !important;
+  border-color: var(--bs-primary) !important;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Smooth transitions */
+* {
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+/* Additional custom styles for React component */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+.container {
+  padding-bottom: 2rem;
+}
