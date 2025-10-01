@@ -17,6 +17,9 @@ function initializeForm() {
     
     // Initialize mode
     handleModeChange();
+    
+    // Initialize language state
+    handleLanguageChange();
 }
 
 function initializeEventListeners() {
@@ -46,6 +49,20 @@ function initializeEventListeners() {
         handleModeChange();
     });
     
+    // Language card clicks
+    document.getElementById('englishCard').addEventListener('click', () => {
+        document.getElementById('english').checked = true;
+        handleLanguageChange();
+    });
+    document.getElementById('hindiCard').addEventListener('click', () => {
+        document.getElementById('hindi').checked = true;
+        handleLanguageChange();
+    });
+    
+    // Language selection change handlers
+    document.getElementById('english').addEventListener('change', handleLanguageChange);
+    document.getElementById('hindi').addEventListener('change', handleLanguageChange);
+    
     // API key management
     initializeApiKeyManagement();
 }
@@ -69,9 +86,13 @@ async function handleFormSubmit(event) {
         // Check mode
         const isHumanizeMode = document.getElementById('mode1').checked;
         
+        // Get selected language
+        const selectedLanguage = document.querySelector('input[name="language"]:checked')?.value || 'english';
+        
         // Prepare data based on mode
         const data = {
-            mode: isHumanizeMode ? 'humanize' : 'generate'
+            mode: isHumanizeMode ? 'humanize' : 'generate',
+            language: selectedLanguage
         };
         
         // Include API key if available
@@ -129,11 +150,20 @@ async function handleFormSubmit(event) {
 }
 
 function showLoading() {
+    const selectedLanguage = document.querySelector('input[name="language"]:checked')?.value || 'english';
+    const isEnglish = selectedLanguage === 'english';
+    
     document.getElementById('emptyState').style.display = 'none';
     document.getElementById('errorMessage').style.display = 'none';
     document.getElementById('resultContainer').style.display = 'none';
     document.getElementById('loadingSpinner').style.display = 'block';
     document.getElementById('copyAllBtn').style.display = 'none';
+    
+    // Update loading message based on language
+    const loadingMessage = document.getElementById('loadingMessage');
+    if (loadingMessage) {
+        loadingMessage.textContent = isEnglish ? 'Generating your English script...' : 'आपकी हिंदी स्क्रिप्ट तैयार की जा रही है...';
+    }
     
     // Show button spinner
     const generateBtn = document.getElementById('generateBtn');
@@ -142,7 +172,7 @@ function showLoading() {
     
     generateBtn.disabled = true;
     buttonSpinner.style.display = 'inline-block';
-    buttonText.textContent = 'Generating...';
+    buttonText.textContent = isEnglish ? 'Generating...' : 'तैयार कर रहे हैं...';
 }
 
 function showError(message) {
@@ -324,7 +354,6 @@ function handleModeChange() {
     
     if (isHumanizeMode) {
         // Mode 1: Humanize
-        if (buttonText) buttonText.textContent = 'Humanize Script';
         if (humanizeSection) humanizeSection.style.display = 'block';
         if (generateSection) generateSection.style.display = 'none';
         if (rawScriptInput) rawScriptInput.required = true;
@@ -334,7 +363,6 @@ function handleModeChange() {
         if (genreInput) genreInput.required = false;
     } else {
         // Mode 2: Generate
-        if (buttonText) buttonText.textContent = 'Generate Script';
         if (humanizeSection) humanizeSection.style.display = 'none';
         if (generateSection) generateSection.style.display = 'block';
         if (rawScriptInput) rawScriptInput.required = false;
@@ -345,6 +373,57 @@ function handleModeChange() {
         
         // Trigger genre change to show/hide options
         handleGenreChange();
+    }
+    
+    // Update button text based on mode and language
+    updateButtonText();
+}
+
+function handleLanguageChange() {
+    const englishRadio = document.getElementById('english');
+    const hindiRadio = document.getElementById('hindi');
+    const englishCard = document.getElementById('englishCard');
+    const hindiCard = document.getElementById('hindiCard');
+    
+    if (!englishRadio || !hindiRadio) return; // Safety check
+    
+    const isEnglish = englishRadio.checked;
+    
+    // Update card styling
+    if (englishCard) englishCard.classList.toggle('active', isEnglish);
+    if (hindiCard) hindiCard.classList.toggle('active', !isEnglish);
+    
+    // Update button text based on language selection
+    updateButtonText();
+    
+    // Update empty state message
+    updateEmptyStateMessage();
+}
+
+function updateEmptyStateMessage() {
+    const isEnglish = document.getElementById('english').checked;
+    const emptyStateMessage = document.getElementById('emptyStateMessage');
+    
+    if (emptyStateMessage) {
+        if (isEnglish) {
+            emptyStateMessage.textContent = 'Fill out the form and click "Generate Script" to create your English script.';
+        } else {
+            emptyStateMessage.textContent = 'फॉर्म भरें और अपनी हिंदी स्क्रिप्ट बनाने के लिए "स्क्रिप्ट बनाएं" पर क्लिक करें।';
+        }
+    }
+}
+
+function updateButtonText() {
+    const buttonText = document.getElementById('buttonText');
+    const isHumanizeMode = document.getElementById('mode1').checked;
+    const isEnglish = document.getElementById('english').checked;
+    
+    if (!buttonText) return;
+    
+    if (isHumanizeMode) {
+        buttonText.textContent = isEnglish ? 'Humanize Script' : 'स्क्रिप्ट को मानवीकृत करें';
+    } else {
+        buttonText.textContent = isEnglish ? 'Generate Script' : 'स्क्रिप्ट बनाएं';
     }
 }
 
@@ -357,12 +436,10 @@ function handleGenreChange() {
 function resetButtonState() {
     const generateBtn = document.getElementById('generateBtn');
     const buttonSpinner = document.getElementById('buttonSpinner');
-    const buttonText = document.getElementById('buttonText');
-    const isHumanizeMode = document.getElementById('mode1').checked;
     
     generateBtn.disabled = false;
     buttonSpinner.style.display = 'none';
-    buttonText.textContent = isHumanizeMode ? 'Humanize Script' : 'Generate Script';
+    updateButtonText(); // Use the centralized function
 }
 
 // Form validation

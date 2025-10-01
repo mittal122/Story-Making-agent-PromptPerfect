@@ -8,7 +8,42 @@ from google.generativeai import types
 genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
 
 # System instructions optimized for storytelling and content creation
-SYSTEM_INSTRUCTIONS = """You are an advanced storytelling and content creation agent specialized in transforming raw subtitles or draft text into highly engaging YouTube Shorts scripts.
+SYSTEM_INSTRUCTIONS = """You are an advanced storytel            # Validate title lengths (max 70 characters)
+            for i, title in enumerate(result.get("video_titles", [])):
+                if len(title) > 70:
+                    result["video_titles"][i] = title[:67] + "..."
+            
+            # Convert new format to old format for backward compatibility
+            # Take the first variation as the primary result
+            converted_result = {
+                "title": result["video_titles"][0] if result.get("video_titles") else "",
+                "vo_script": result["story_scripts"][0]["script"] if result.get("story_scripts") and len(result["story_scripts"]) > 0 else "",
+                "on_screen_text": [],  # Will be derived from script content
+                "description": result["descriptions"][0] if result.get("descriptions") else "",
+                "hashtags": result["tags"][0] if result.get("tags") else [],
+                "notes": {
+                    "humanized": True,
+                    "original_length": len(raw_script),
+                    "target_duration": f"{duration_seconds} seconds",
+                    "processing": "Content transformed using storytelling techniques",
+                    "word_count": result["story_scripts"][0].get("word_count", 0) if result.get("story_scripts") and len(result["story_scripts"]) > 0 else 0,
+                    "variations_available": {
+                        "story_scripts": len(result.get("story_scripts", [])),
+                        "video_titles": len(result.get("video_titles", [])),
+                        "descriptions": len(result.get("descriptions", [])),
+                        "tag_sets": len(result.get("tags", []))
+                    },
+                    "full_response": result  # Include full response for advanced users
+                }
+            }
+            
+            # Generate on-screen text from script content (extract key phrases)
+            if converted_result["vo_script"]:
+                script_sentences = converted_result["vo_script"].split('. ')[:5]  # Take first 5 sentences
+                converted_result["on_screen_text"] = [sentence.split()[:3] for sentence in script_sentences if sentence.strip()]
+                converted_result["on_screen_text"] = [' '.join(words) + '...' for words in converted_result["on_screen_text"] if words]
+            
+            return converted_result creation agent specialized in transforming raw subtitles or draft text into highly engaging YouTube Shorts scripts.
 Your goal is to make the output look original, professional, and optimized for maximum audience retention and discoverability.
 
 CORE PRINCIPLES:
@@ -194,19 +229,54 @@ Generate 3 variations following the OUTPUT SCHEMA with story scripts, titles, de
         try:
             result = json.loads(response.text)
             
-            # Validate required fields in response
-            required_fields = ["title", "vo_script", "on_screen_text", "description", "hashtags"]
+            # Validate required fields in response for new storytelling format
+            required_fields = ["story_scripts", "video_titles", "descriptions", "tags"]
             missing_fields = [field for field in required_fields if field not in result]
             
             if missing_fields:
                 logging.warning(f"Response missing fields: {missing_fields}")
                 return {"error": f"Invalid response format: missing {missing_fields}"}
             
-            # Validate title length
-            if len(result.get("title", "")) > 65:
-                result["title"] = result["title"][:62] + "..."
+            # Validate that we have variations
+            if not isinstance(result.get("story_scripts"), list) or len(result["story_scripts"]) == 0:
+                return {"error": "No story script variations generated"}
             
-            return result
+            if not isinstance(result.get("video_titles"), list) or len(result["video_titles"]) == 0:
+                return {"error": "No video title variations generated"}
+            
+            # Validate title lengths (max 70 characters)
+            for i, title in enumerate(result.get("video_titles", [])):
+                if len(title) > 70:
+                    result["video_titles"][i] = title[:67] + "..."
+            
+            # Convert new format to old format for backward compatibility
+            # Take the first variation as the primary result
+            converted_result = {
+                "title": result["video_titles"][0] if result.get("video_titles") else "",
+                "vo_script": result["story_scripts"][0]["script"] if result.get("story_scripts") and len(result["story_scripts"]) > 0 else "",
+                "on_screen_text": [],  # Will be derived from script content
+                "description": result["descriptions"][0] if result.get("descriptions") else "",
+                "hashtags": result["tags"][0] if result.get("tags") else [],
+                "notes": {
+                    "word_count": result["story_scripts"][0].get("word_count", 0) if result.get("story_scripts") and len(result["story_scripts"]) > 0 else 0,
+                    "duration_seconds": result["story_scripts"][0].get("estimated_duration", "45 seconds") if result.get("story_scripts") and len(result["story_scripts"]) > 0 else "45 seconds",
+                    "variations_available": {
+                        "story_scripts": len(result.get("story_scripts", [])),
+                        "video_titles": len(result.get("video_titles", [])),
+                        "descriptions": len(result.get("descriptions", [])),
+                        "tag_sets": len(result.get("tags", []))
+                    },
+                    "full_response": result  # Include full response for advanced users
+                }
+            }
+            
+            # Generate on-screen text from script content (extract key phrases)
+            if converted_result["vo_script"]:
+                script_sentences = converted_result["vo_script"].split('. ')[:5]  # Take first 5 sentences
+                converted_result["on_screen_text"] = [sentence.split()[:3] for sentence in script_sentences if sentence.strip()]
+                converted_result["on_screen_text"] = [' '.join(words) + '...' for words in converted_result["on_screen_text"] if words]
+            
+            return converted_result
             
         except json.JSONDecodeError as e:
             logging.error(f"Failed to parse JSON response: {e}")
@@ -282,17 +352,22 @@ Please transform this content to:
         try:
             result = json.loads(response.text)
             
-            # Validate required fields in response
-            required_fields = ["title", "vo_script", "on_screen_text", "description", "hashtags"]
+            # Validate required fields in response for new storytelling format
+            required_fields = ["story_scripts", "video_titles", "descriptions", "tags"]
             missing_fields = [field for field in required_fields if field not in result]
             
             if missing_fields:
                 logging.warning(f"Response missing fields: {missing_fields}")
                 return {"error": f"Invalid response format: missing {missing_fields}"}
             
-            # Validate title length
-            if len(result.get("title", "")) > 65:
-                result["title"] = result["title"][:62] + "..."
+            # Validate that we have variations
+            if not isinstance(result.get("story_scripts"), list) or len(result["story_scripts"]) == 0:
+                return {"error": "No story script variations generated"}
+            
+            # Validate title lengths (max 70 characters)
+            for i, title in enumerate(result.get("video_titles", [])):
+                if len(title) > 70:
+                    result["video_titles"][i] = title[:67] + "..."
             
             # Add processing notes
             if "notes" not in result:
@@ -302,7 +377,7 @@ Please transform this content to:
             result["notes"]["humanized"] = True
             result["notes"]["original_length"] = len(raw_script)
             result["notes"]["target_duration"] = f"{duration_seconds} seconds"
-            result["notes"]["processing"] = "Script humanized for natural speech"
+            result["notes"]["processing"] = "Content transformed using storytelling techniques"
             
             return result
             

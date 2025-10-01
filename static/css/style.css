@@ -275,6 +275,22 @@ h1, h2, h3, h4, h5, h6 {
     background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(40, 167, 69, 0.05));
 }
 
+/* Language card styles */
+#englishCard:hover, #hindiCard:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.15);
+}
+
+#englishCard.active {
+    border-color: var(--bs-primary) !important;
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.1), rgba(13, 110, 253, 0.05));
+}
+
+#hindiCard.active {
+    border-color: var(--bs-success) !important;
+    background: linear-gradient(135deg, rgba(25, 135, 84, 0.1), rgba(25, 135, 84, 0.05));
+}
+
 .mode-icon {
     transition: transform 0.3s ease;
 }

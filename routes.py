@@ -40,9 +40,10 @@ def generate_script():
         if mode == 'humanize':
             # Mode 1: Handle humanization mode
             duration_seconds = int(form_data.get('duration_seconds', 45))
+            language = form_data.get('language', 'english')  # Default to English
             try:
                 custom_api_key = form_data.get('api_key')
-                result = humanize_story_script(form_data.get('raw_script'), duration_seconds, custom_api_key)
+                result = humanize_story_script(form_data.get('raw_script'), duration_seconds, custom_api_key, language)
             except Exception as api_error:
                 logging.error(f"Gemini API error in humanize mode: {str(api_error)}")
                 
@@ -63,12 +64,13 @@ def generate_script():
             
             # Build input payload for genre-based generation
             duration_seconds = int(form_data.get('duration_seconds', 45))
+            language = form_data.get('language', 'english')  # Default to English
             input_payload = {
                 "api_key_mode": "env",
                 "generation": {
                     "duration_seconds": duration_seconds,
                     "duration_type": "short" if duration_seconds <= 60 else "long",
-                    "language": "hi",
+                    "language": language,
                     "voice_tags": True,
                     "youtube_optimized": True,
                     "algorithm_focus": "maximum_reach"
@@ -80,7 +82,7 @@ def generate_script():
                 },
                 "seo": {
                     "hashtag_style": "youtube_optimized",
-                    "audience": "16-35, Hindi, storytelling",
+                    "audience": f"16-35, {language.title()}, storytelling",
                     "platform": "youtube",
                     "optimization_goal": "viral_reach"
                 }
@@ -89,7 +91,7 @@ def generate_script():
             # Generate script using Gemini API
             try:
                 custom_api_key = form_data.get('api_key')
-                result = generate_story_script(input_payload, custom_api_key)
+                result = generate_story_script(input_payload, custom_api_key, language)
             except Exception as api_error:
                 logging.error(f"Gemini API error in generate mode: {str(api_error)}")
                 

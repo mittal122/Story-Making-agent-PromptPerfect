@@ -165,6 +165,44 @@
                         </div>
                     </div>
 
+                    <!-- Language Selection (for both modes) -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-language me-2 text-info"></i>
+                            Script Language *
+                        </label>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="card border-2" id="englishCard">
+                                    <div class="card-body text-center p-3">
+                                        <input class="form-check-input d-none" type="radio" name="language" id="english" value="english" checked>
+                                        <label for="english" class="w-100 cursor-pointer">
+                                            <i class="fas fa-flag-usa fa-2x text-primary mb-2"></i>
+                                            <h6 class="fw-bold">English</h6>
+                                            <small class="text-muted">Generate script in English language</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card border-2" id="hindiCard">
+                                    <div class="card-body text-center p-3">
+                                        <input class="form-check-input d-none" type="radio" name="language" id="hindi" value="hindi">
+                                        <label for="hindi" class="w-100 cursor-pointer">
+                                            <i class="fas fa-flag fa-2x text-success mb-2"></i>
+                                            <h6 class="fw-bold">हिंदी (Hindi)</h6>
+                                            <small class="text-muted">हिंदी भाषा में स्क्रिप्ट बनाएं</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Choose the language for your script generation
+                        </div>
+                    </div>
+
                     <!-- Generate Button (outside of mode sections) -->
                     <button type="submit" class="btn btn-lg btn-primary w-100 shadow-lg" id="generateBtn">
                         <i class="fas fa-magic me-2"></i>
@@ -196,7 +234,7 @@
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Generating...</span>
                     </div>
-                    <p class="mt-2">Generating your Hindi script...</p>
+                    <p class="mt-2" id="loadingMessage">Generating your script...</p>
                 </div>
 
                 <div id="errorMessage" style="display: none;" class="alert alert-danger">
@@ -299,7 +337,7 @@
 
                 <div id="emptyState" class="text-center text-muted">
                     <i class="fas fa-video fa-3x mb-3"></i>
-                    <p>Fill out the form and click "Generate Script" to create your Hindi YouTube script.</p>
+                    <p id="emptyStateMessage">Fill out the form and click "Generate Script" to create your script.</p>
                 </div>
             </div>
         </div>
