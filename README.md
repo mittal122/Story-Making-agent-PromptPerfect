@@ -1,232 +1,152 @@
-# PromptPerfect - Hindi Script Generator
+# Story-Making Agent (PromptPerfect)
 
-A full-stack web application that generates and humanizes Hindi scripts for YouTube content using AI. Built with Flask (Python) backend and React frontend, optimized for deployment on Vercel.
+A Flask + Gemini powered story-script assistant for short-form creators. The app helps users either **humanize an existing script** or **generate a new story script** from topic + genre, then returns YouTube-ready outputs (title, narration script, description, hashtags, and tags).
 
-## Features
+## Why this project was made
+Short-video creators often lose time on repetitive prompt writing, rewriting stiff drafts, and reformatting output for YouTube.
 
-- **Script Generation**: Create new Hindi scripts based on topics and genres
-- **Script Humanization**: Transform existing scripts into natural, human-like narration
-- **YouTube Optimization**: Scripts are optimized for YouTube algorithm and engagement
-- **Multiple Genres**: Support for mysterious, thriller, investigative, motivational, and more
-- **Flexible Duration**: Generate scripts for 30 seconds to 10 minutes
-- **Custom API Keys**: Support for custom Gemini API keys
+This project was built to reduce that friction by combining:
+- prompt structuring for storytelling,
+- genre-aware script shaping,
+- duration-aware pacing,
+- and output formatting in one workflow.
 
-## Tech Stack
+In short, it addresses the pain of turning rough ideas/text into publishable, engaging short-video script packages quickly.
 
-- **Backend**: Flask (Python), Google Gemini AI API
-- **Frontend**: React, Bootstrap, Font Awesome
-- **Deployment**: Vercel (Serverless Functions)
+## Who this project helps
+- **YouTube Shorts creators**: quickly generate or polish scripts optimized for short-form storytelling.
+- **Content writers/script editors**: transform raw drafts into more natural, audience-friendly narration.
+- **Social media teams/solo marketers**: speed up content iteration with reusable structured outputs (title, description, hashtags).
+- **Developers building AI content tools**: use this repository as a practical Flask + Gemini reference for generation/humanization flows.
 
-## Project Structure
+## What problem this project solves
+### Problem statement
+Content creators need fast, repeatable ways to go from idea (or rough text) to strong short-video script assets, but manual drafting and prompt tuning is inconsistent and time-consuming.
 
+### Solution approach in this repo
+This repository provides a web workflow with two modes:
+1. **Humanize mode**: rewrites user-provided script text into more natural storytelling narration.
+2. **Generate mode**: creates script output from topic, genre, optional context, duration, and language.
+
+Backend routes validate inputs, call Gemini-based generation logic, and return structured JSON consumed by the frontend UI.
+
+## Project flow diagram
+```mermaid
+flowchart TD
+    A[User opens web app] --> B{Select mode}
+    B -->|Humanize| C[Paste raw script]
+    B -->|Generate| D[Enter topic genre optional description]
+    C --> E[Choose duration and language]
+    D --> E
+    E --> F[Optional custom Gemini API key from UI settings]
+    F --> G[Frontend sends POST request to generate endpoint]
+    G --> H[Flask validates payload and selected mode]
+    H --> I[Gemini service builds prompt with genre language duration context]
+    I --> J[Gemini model generates structured story outputs]
+    J --> K[Backend maps response to UI-friendly fields]
+    K --> L[Frontend displays title script description hashtags tags]
+    L --> M[User copies content for publishing]
 ```
-PromptPerfect/
-├── api/
-│   ├── index.py              # Main Flask API endpoint
-│   ├── gemini_service.py     # Gemini AI service functions
-│   └── requirements.txt      # Python dependencies
-├── frontend/frontend/
-│   ├── src/
-│   │   ├── App.jsx          # Main React component
-│   │   ├── App.css          # Styles
-│   │   └── main.jsx         # Entry point
-│   ├── index.html           # HTML template
-│   └── package.json         # Node.js dependencies
-├── vercel.json              # Vercel configuration
-└── README.md               # This file
+
+## Feature diagram
+```mermaid
+mindmap
+  root((Story-Making Agent Features))
+    Script Workflows
+      Humanize existing script
+      Generate new script from topic and genre
+    Story Controls
+      Multiple genres
+      Duration options 30s to 10m
+      Language selection English and Hindi
+    Output Package
+      Video title
+      Voice-over script
+      On-screen text hints
+      Description
+      Hashtags and tags
+    UX Helpers
+      API key save in browser localStorage
+      Copy single fields
+      Copy-all output
+      Loading and error states
+    Backend
+      Flask routes for validation and response handling
+      Gemini prompt orchestration
+      Health endpoint for deployment checks
 ```
 
-## Deployment on Vercel
+## Key features
+- Two creation paths: **Humanize** and **Generate**
+- Genre-guided storytelling output
+- Duration-aware script targeting
+- English/Hindi language support in current Flask app flow
+- Structured output for publishing workflows
+- Optional per-user Gemini API key from UI
 
-### Prerequisites
+## Tech stack
+- **Backend:** Python, Flask
+- **AI:** Google Gemini API (`google-generativeai`)
+- **Frontend:** HTML templates, Bootstrap UI, Vanilla JavaScript
+- **Deployment artifacts:** Vercel config + Python API entrypoint, plus local Flask app files
 
-1. **Vercel Account**: Sign up at [vercel.com](https://vercel.com)
-2. **Gemini API Key**: Get your free API key from [Google AI Studio](https://aistudio.google.com/app/apikey)
+## Repository structure (high level)
+```text
+.
+├── app.py / routes.py           # Local Flask app + routes
+├── gemini_service.py            # Prompting and response shaping logic
+├── api/index.py                 # Vercel-oriented API entrypoint
+├── api/gemini_service.py        # API-side Gemini service copy
+├── templates/ + static/         # Web UI templates, JS, CSS
+├── frontend/frontend/           # Separate React/Vite frontend scaffold
+├── test_api.py                  # Basic API function test script
+└── vercel.json                  # Deployment routing/build config
+```
 
-### Step 1: Clone and Setup
-
+## Setup
+### 1) Clone and install Python dependencies
 ```bash
-# Clone your repository
-git clone <your-repo-url>
-cd PromptPerfect
-
-# Install frontend dependencies
-cd frontend/frontend
-npm install
-cd ../..
-```
-
-### Step 2: Deploy to Vercel
-
-#### Option A: Using Vercel CLI
-
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel
-
-# Follow the prompts:
-# - Set up and deploy? Yes
-# - Which scope? Select your account
-# - Link to existing project? No
-# - Project name: promptperfect (or your choice)
-# - In which directory is your code? ./
-# - Auto-detected settings? Yes
-```
-
-#### Option B: Using Vercel Dashboard
-
-1. Go to [vercel.com](https://vercel.com) and sign in
-2. Click "New Project"
-3. Import your Git repository
-4. Vercel will auto-detect the settings from `vercel.json`
-5. Click "Deploy"
-
-### Step 3: Environment Variables
-
-After deployment, add environment variables in Vercel dashboard:
-
-1. Go to your project settings
-2. Navigate to "Environment Variables"
-3. Add the following variables:
-
-```
-GEMINI_API_KEY=your_gemini_api_key_here
-SESSION_SECRET=your_random_session_secret_here
-```
-
-### Step 4: Update Domain (Optional)
-
-1. Go to your project settings
-2. Navigate to "Domains"
-3. Add your custom domain if desired
-
-## Local Development
-
-### Backend Setup
-
-```bash
-# Install Python dependencies
-cd api
+git clone https://github.com/mittal122/Story-Making-agent-PromptPerfect.git
+cd Story-Making-agent-PromptPerfect
 pip install -r requirements.txt
-
-# Set environment variables
-export GEMINI_API_KEY=your_gemini_api_key
-export SESSION_SECRET=your_session_secret
-
-# Run Flask development server
-python index.py
 ```
 
-### Frontend Setup
-
+### 2) Configure environment variables
 ```bash
-# Install and run React development server
-cd frontend/frontend
-npm install
-npm run dev
+export GEMINI_API_KEY="your_gemini_api_key"
+export SESSION_SECRET="your_session_secret"
 ```
 
-The frontend will be available at `http://localhost:5173` and will proxy API requests to the backend.
-
-## API Endpoints
-
-### POST /api/generate
-
-Generates or humanizes Hindi scripts.
-
-**Request Body:**
-```json
-{
-  "mode": "generate",  // or "humanize"
-  "topic": "Your topic here",
-  "genre": "mysterious",
-  "description": "Optional description",
-  "duration_seconds": 45,
-  "api_key": "optional_custom_api_key"
-}
+### 3) Run the Flask app
+```bash
+python app.py
 ```
 
-**Response:**
-```json
-{
-  "title": "Generated title",
-  "vo_script": "Hindi script content",
-  "on_screen_text": ["Text", "overlays"],
-  "description": "YouTube description",
-  "hashtags": ["#tag1", "#tag2"],
-  "notes": {
-    "word_count": 112,
-    "duration_seconds": 45
-  }
-}
-```
+Open: `http://localhost:5000`
 
-### GET /api/health
+## Usage
+1. Open the app.
+2. Pick **Humanize** or **Generate** mode.
+3. Fill required fields (script text OR topic+genre).
+4. Choose duration and language.
+5. Optionally add your Gemini API key in the UI settings.
+6. Generate output and copy assets for publishing.
 
-Health check endpoint.
+## API endpoints (current Flask app)
+- `POST /generate` — main generation/humanization route
+- `GET /` — web interface
 
-**Response:**
-```json
-{
-  "status": "healthy",
-  "message": "PromptPerfect API is running"
-}
-```
+Vercel API variant also exposes:
+- `POST /api/generate`
+- `GET /api/health`
 
-## Configuration Files
+## Future scope
+- Better automated tests for route and response contracts
+- Stronger unification between local app and `api/` service files
+- More export options (templates/platform-specific bundles)
 
-### vercel.json
-
-Configures Vercel deployment:
-- Python serverless functions for API
-- Static build for React frontend
-- Route configuration
-- Build settings
-
-### package.json (Frontend)
-
-React application with Vite build tool:
-- Development server with HMR
-- Production build optimization
-- ESLint for code quality
-
-### requirements.txt (API)
-
-Python dependencies:
-- Flask for web framework
-- google-generativeai for AI integration
-
-## Environment Variables
-
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `GEMINI_API_KEY` | Google Gemini API key for AI generation | Yes |
-| `SESSION_SECRET` | Secret key for Flask sessions | Yes |
-
-## Troubleshooting
-
-### Common Issues
-
-1. **API Errors**: Ensure `GEMINI_API_KEY` is set correctly
-2. **Build Failures**: Check that all dependencies are listed in `requirements.txt` and `package.json`
-3. **CORS Issues**: API routes are configured to accept requests from the frontend domain
-4. **Function Timeout**: Large scripts may take time to generate; consider increasing timeout in Vercel settings
-
-### Logs
-
-View deployment and runtime logs in the Vercel dashboard under the "Functions" tab.
-
-## Support
-
-For issues and questions:
-1. Check the Vercel deployment logs
-2. Verify environment variables are set correctly
-3. Ensure your Gemini API key has sufficient quota
-4. Check that the API endpoints are responding at `/api/health`
+## Contributing
+Contributions are welcome. Please open an issue first to discuss major changes.
 
 ## License
-
-This project is open source and available under the MIT License.
+MIT License (as declared in project metadata).
