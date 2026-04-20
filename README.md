@@ -35,17 +35,19 @@ Backend routes validate inputs, call Gemini-based generation logic, and return s
 flowchart TD
     A[User opens web app] --> B{Select mode}
     B -->|Humanize| C[Paste raw script]
-    B -->|Generate| D[Enter topic genre optional description]
+    B -->|Generate| D[Enter topic, genre, optional description]
     C --> E[Choose duration and language]
     D --> E
     E --> F[Optional custom Gemini API key from UI settings]
     F --> G[Frontend sends POST request to generate endpoint]
     G --> H[Flask validates payload and selected mode]
-    H --> I[Gemini service builds prompt with genre language duration context]
+    H --> I[Gemini service builds prompt with genre, language, duration, context]
     I --> J[Gemini model generates structured story outputs]
     J --> K[Backend maps response to UI-friendly fields]
     K --> L[Frontend displays title script description hashtags tags]
     L --> M[User copies content for publishing]
+    H --> N[On validation or API error, return user-friendly error message]
+    N --> O[Frontend shows error state and guidance]
 ```
 
 ## Feature diagram
@@ -57,8 +59,8 @@ mindmap
       Generate new script from topic and genre
     Story Controls
       Multiple genres
-      Duration options 30s to 10m
-      Language selection English and Hindi
+      Duration options: 30s to 10m
+      Language selection: English and Hindi
     Output Package
       Video title
       Voice-over script
@@ -80,7 +82,7 @@ mindmap
 - Two creation paths: **Humanize** and **Generate**
 - Genre-guided storytelling output
 - Duration-aware script targeting
-- English/Hindi language support in current Flask app flow
+- Currently supports English/Hindi language selection in the Flask app flow
 - Structured output for publishing workflows
 - Optional per-user Gemini API key from UI
 
@@ -93,7 +95,7 @@ mindmap
 ## Repository structure (high level)
 ```text
 .
-├── app.py / routes.py           # Local Flask app + routes
+├── app.py and routes.py         # Local Flask app + routes
 ├── gemini_service.py            # Prompting and response shaping logic
 ├── api/index.py                 # Vercel-oriented API entrypoint
 ├── api/gemini_service.py        # API-side Gemini service copy
